@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>每日打卡 · 222 天执行计划</title>
+<style>
+:root{
+  --bg:#f6f8f7; --surface:#ffffff; --surface-muted:#f0f3f2; --border:#e3e8e6;
+  --text:#1d2a26; --muted:#6b7f78;
+  --brand:#16a34a; --brand-deep:#12803c; --brand-soft:#e8f7ee;
+  --amber:#d97706; --amber-soft:#fef3e2;
+  --hm1:#eef1f0; --hm2:#c9ecd8; --hm3:#7fd3a2; --hm4:#16a34a;
+  --shadow:0 1px 3px rgba(20,40,30,.06), 0 4px 14px rgba(20,40,30,.05);
+}
+html[data-theme="dark"]{
+  --bg:#0f1513; --surface:#161e1b; --surface-muted:#1c2622; --border:#2a3833;
+  --text:#e4ebe8; --muted:#8fa39b;
+  --brand:#22c55e; --brand-deep:#4ade80; --brand-soft:#17301f;
+  --amber:#f59e0b; --amber-soft:#2e2415;
+  --hm1:#222c28; --hm2:#1d4030; --hm3:#2a7a4d; --hm4:#22c55e;
+  --shadow:0 1px 3px rgba(0,0,0,.3), 0 4px 14px rgba(0,0,0,.25);
+}
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+body{
+  background:var(--bg); color:var(--text);
+  font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:15px; line-height:1.6;
+}
+button{ font-family:inherit; cursor:pointer; }
+input,textarea{ font-family:inherit; }
+
+/* ---------- header ---------- */
+header{
+  position:sticky; top:0; z-index:10;
+  background:color-mix(in srgb, var(--bg) 85%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  padding:14px 20px 0;
+}
+.head-inner{ max-width:880px; margin:0 auto; display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.brand{ font-size:18px; font-weight:700; letter-spacing:.5px; display:flex; align-items:center; gap:8px; }
+.brand .logo{
+  width:26px; height:26px; border-radius:8px; background:var(--brand); color:#fff;
+  display:inline-flex; align-items:center; justify-content:center; font-size:15px;
+}
+.brand .sub{ font-size:12px; font-weight:400; color:var(--muted); margin-left:4px; letter-spacing:0; }
+.head-spacer{ flex:1; }
+nav{ display:flex; gap:4px; }
+nav button{
+  border:none; background:transparent; color:var(--muted);
+  padding:8px 14px; border-radius:10px 10px 0 0; font-size:14px;
+  border-bottom:2px solid transparent;
+}
+nav button.active{ color:var(--brand); border-bottom-color:var(--brand); font-weight:600; }
+nav button:hover{ color:var(--text); }
+#themeBtn{
+  border:1px solid var(--border); background:var(--surface); color:var(--muted);
+  width:34px; height:34px; border-radius:10px; font-size:15px;
+}
+
+/* ---------- layout ---------- */
+main{ max-width:880px; margin:0 auto; padding:20px; }
+.view{ display:none; }
+.view.active{ display:block; animation:fadeIn .18s ease; }
+@keyframes fadeIn{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
+.card{
+  background:var(--surface); border:1px solid var(--border); border-radius:14px;
+  box-shadow:var(--shadow); padding:18px 20px; margin-bottom:16px;
+}
+.card-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.card-head h2{ margin:0; font-size:16px; font-weight:600; }
+
+/* ---------- today: date bar ---------- */
+.datebar{ display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+.datebar button.nb{
+  width:36px; height:36px; border-radius:10px; border:1px solid var(--border);
+  background:var(--surface); color:var(--text); font-size:16px;
+}
+.datebar button.nb:hover{ border-color:var(--brand); color:var(--brand); }
+#dateLabel{ font-size:17px; font-weight:600; min-width:210px; }
+#dateLabel .wk{ font-size:13px; font-weight:400; color:var(--muted); margin-left:6px; }
+#btnToday{
+  height:36px; padding:0 14px; border-radius:10px; border:1px solid var(--border);
+  background:var(--surface); color:var(--muted); font-size:13px;
+}
+#btnToday:hover{ color:var(--brand); border-color:var(--brand); }
+.phase-banner{
+  font-size:13px; color:var(--muted); background:var(--surface-muted);
+  border:1px solid var(--border); border-radius:10px; padding:8px 14px; margin-bottom:14px;
+}
+.phase-banner b{ color:var(--brand); font-weight:600; margin-right:8px; }
+.carryover{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  background:var(--amber-soft); border:1px solid color-mix(in srgb, var(--amber) 28%, var(--border));
+  border-radius:12px; padding:10px 14px; margin-bottom:14px; font-size:13.5px;
+}
+.carryover[hidden]{ display:none; }
+.carryover b{ color:var(--amber); margin-right:8px; flex:none; }
+.carryover span{ flex:1; }
+.carryover button{
+  border:none; background:transparent; color:var(--muted); font-size:12px; flex:none;
+}
+.carryover button:hover{ color:var(--text); }
+.phase-banner{ overflow-wrap:anywhere; }
+.ttext{ min-width:0; overflow-wrap:anywhere; }
+.criteria span{ min-width:0; overflow-wrap:anywhere; }
+.set-note{ overflow-wrap:anywhere; }
+@media (max-width:560px){
+  .head-inner{ gap:8px; }
+  .head-spacer{ display:none; }
+  .brand{ font-size:17px; }
+  #themeBtn{ order:2; margin-left:auto; }
+  nav{ order:3; width:100%; justify-content:space-around; }
+}
+
+/* ---------- today: tasks ---------- */
+#taskList{ list-style:none; margin:0; padding:0; }
+#taskList li{
+  display:flex; align-items:flex-start; gap:12px; padding:12px 4px;
+  border-bottom:1px dashed var(--border);
+}
+#taskList li:last-child{ border-bottom:none; }
+.tcheck{
+  appearance:none; -webkit-appearance:none; flex:none;
+  width:22px; height:22px; border:2px solid var(--border); border-radius:7px;
+  background:var(--surface); margin-top:2px; cursor:pointer; position:relative;
+  transition:all .12s;
+}
+.tcheck:hover{ border-color:var(--brand); }
+.tcheck:checked{ background:var(--brand); border-color:var(--brand); }
+.tcheck:checked::after{
+  content:""; position:absolute; left:6px; top:2px; width:5px; height:11px;
+  border:solid #fff; border-width:0 2px 2px 0; transform:rotate(45deg);
+}
+.tnum{
+  flex:none; width:24px; height:24px; border-radius:8px; margin-top:1px;
+  background:var(--surface-muted); color:var(--muted); font-size:12px;
+  display:flex; align-items:center; justify-content:center; font-weight:600;
+}
+li.done .tnum{ background:var(--brand-soft); color:var(--brand); }
+li.done .ttext{ color:var(--muted); text-decoration:line-through; text-decoration-color:color-mix(in srgb,var(--muted) 50%, transparent); }
+.ttext{ flex:1; font-size:15px; }
+#taskProgress{ font-size:13px; color:var(--muted); }
+#taskProgress b{ color:var(--brand); font-size:15px; }
+.status-chip{
+  font-size:12px; padding:3px 10px; border-radius:999px; font-weight:600;
+}
+.st-none{ background:var(--surface-muted); color:var(--muted); }
+.st-partial{ background:var(--amber-soft); color:var(--amber); }
+.st-done{ background:var(--brand-soft); color:var(--brand); }
+.criteria{
+  margin-top:14px; background:var(--amber-soft); border-radius:10px; padding:12px 14px;
+  font-size:13.5px; color:var(--text); display:flex; gap:10px; align-items:baseline;
+}
+.criteria b{ flex:none; color:var(--amber); font-size:13px; }
+
+/* ---------- today: record form ---------- */
+.rec-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.rec-grid .full{ grid-column:1 / -1; }
+@media (max-width:560px){ .rec-grid{ grid-template-columns:1fr; } }
+.rec-item label{ display:block; font-size:12.5px; color:var(--muted); margin-bottom:5px; }
+.rec-item input, .rec-item textarea{
+  width:100%; border:1px solid var(--border); border-radius:10px;
+  background:var(--surface); color:var(--text); padding:9px 12px; font-size:14px;
+  transition:border-color .12s;
+}
+.rec-item input:focus, .rec-item textarea:focus{ outline:none; border-color:var(--brand); }
+.rec-item textarea{ resize:vertical; min-height:56px; }
+.rec-foot{ display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-top:14px; }
+#saveHint{ font-size:12.5px; color:var(--muted); transition:color .3s; }
+#saveHint.flash{ color:var(--brand); }
+#btnAll{
+  height:36px; padding:0 16px; border-radius:10px; border:none;
+  background:var(--brand); color:#fff; font-size:13.5px; font-weight:600;
+}
+#btnAll:hover{ background:var(--brand-deep); }
+html[data-theme="dark"] #btnAll{ color:#0b1220; }
+
+/* ---------- overview: heatmap ---------- */
+.ov-chips{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+.ov-chips .chip{
+  background:var(--surface); border:1px solid var(--border); border-radius:12px;
+  padding:10px 16px; box-shadow:var(--shadow); font-size:13px; color:var(--muted);
+}
+.ov-chips .chip b{ display:block; font-size:20px; color:var(--text); line-height:1.3; }
+.ov-chips .chip.hi b{ color:var(--brand); }
+.heatmap-wrap{ overflow-x:auto; padding-bottom:6px; }
+.heatmap{ display:flex; gap:4px; min-width:max-content; }
+.hm-col{ display:flex; flex-direction:column; gap:4px; }
+.hm-month{ height:18px; font-size:11px; color:var(--muted); white-space:nowrap; }
+.hm-cell{
+  width:15px; height:15px; border-radius:4px; background:var(--hm1);
+  cursor:pointer; border:none; padding:0;
+}
+.hm-cell:hover{ outline:2px solid var(--brand); outline-offset:1px; }
+.hm-future{ background:transparent; border:1px dashed var(--border); cursor:default; }
+.hm-future:hover{ outline:none; }
+.hm-empty{ background:transparent; border:none; cursor:default; }
+.hm-empty:hover{ outline:none; }
+.hm-q1{ background:var(--hm2); }
+.hm-q2{ background:var(--hm3); }
+.hm-full{ background:var(--hm4); }
+.hm-today{ outline:2px solid var(--amber); outline-offset:1px; }
+.hm-legend{ display:flex; align-items:center; gap:5px; margin-top:12px; font-size:12px; color:var(--muted); justify-content:flex-end; }
+.hm-legend i{ width:13px; height:13px; border-radius:4px; display:inline-block; }
+.ov-hint{ font-size:12.5px; color:var(--muted); margin-top:10px; }
+
+/* ---------- stats ---------- */
+.kpi-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+@media (max-width:640px){ .kpi-grid{ grid-template-columns:repeat(2,1fr); } }
+.kpi{
+  background:var(--surface); border:1px solid var(--border); border-radius:14px;
+  box-shadow:var(--shadow); padding:16px; text-align:center;
+}
+.kpi .v{ font-size:26px; font-weight:700; color:var(--brand); line-height:1.2; }
+.kpi .v small{ font-size:13px; font-weight:500; color:var(--muted); }
+.kpi .l{ font-size:12.5px; color:var(--muted); margin-top:4px; }
+.wk-row{ display:flex; align-items:center; gap:10px; padding:7px 0; }
+.wk-row .wl{ flex:none; width:76px; font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums; }
+.wk-row .bar{ flex:1; height:10px; background:var(--surface-muted); border-radius:999px; overflow:hidden; }
+.wk-row .bar i{ display:block; height:100%; background:var(--brand); border-radius:999px; transition:width .3s; }
+.wk-row .wv{ flex:none; width:44px; text-align:right; font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums; }
+
+/* ---------- settings ---------- */
+.set-row{ display:flex; flex-direction:column; gap:5px; margin-bottom:14px; }
+.set-row label{ font-size:13px; color:var(--muted); }
+.set-row label b{ color:var(--text); font-weight:600; }
+.set-row input{
+  border:1px solid var(--border); border-radius:10px; background:var(--surface);
+  color:var(--text); padding:10px 12px; font-size:14px; width:100%;
+}
+.set-row input:focus{ outline:none; border-color:var(--brand); }
+.set-note{ font-size:12.5px; color:var(--muted); background:var(--surface-muted); border-radius:10px; padding:10px 14px; margin-bottom:14px; line-height:1.7; }
+.setup-guide{ margin-top:16px; border-top:1px solid var(--border); padding-top:14px; font-size:13px; color:var(--muted); }
+.setup-guide summary{ cursor:pointer; color:var(--brand); font-weight:600; font-size:13px; }
+.setup-guide ol{ margin:12px 0 0; padding-left:20px; line-height:1.85; }
+.setup-guide li{ margin-bottom:10px; }
+.setup-guide li b{ color:var(--text); }
+.setup-guide code{ background:var(--surface-muted); border:1px solid var(--border); border-radius:6px; padding:1px 6px; font-size:12px; color:var(--text); overflow-wrap:anywhere; }
+.setup-guide a{ color:var(--brand); text-decoration:underline; overflow-wrap:anywhere; }
+.guide-tip{ margin:12px 0 0; background:var(--brand-soft); color:var(--text); border-radius:10px; padding:10px 14px; font-size:12.5px; }
+.auto-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
+.switch{ display:inline-flex; align-items:center; gap:10px; cursor:pointer; user-select:none; }
+.switch input{ position:absolute; opacity:0; width:0; height:0; }
+.switch .track{
+  flex:none; width:40px; height:22px; border-radius:999px; background:var(--border);
+  position:relative; transition:background .16s;
+}
+.switch .track::after{
+  content:""; position:absolute; left:3px; top:3px; width:16px; height:16px;
+  border-radius:50%; background:#fff; transition:transform .16s;
+  box-shadow:0 1px 2px rgba(0,0,0,.2);
+}
+.switch input:checked + .track{ background:var(--brand); }
+.switch input:checked + .track::after{ transform:translateX(18px); }
+.switch input:focus-visible + .track{ outline:2px solid var(--brand); outline-offset:2px; }
+.switch-label{ font-size:13px; color:var(--text); }
+.auto-state{ font-size:12.5px; color:var(--muted); }
+.auto-state.ok{ color:var(--brand); }
+.auto-state.err{ color:#dc2626; }
+html[data-theme="dark"] .auto-state.err{ color:#f87171; }
+.btn{
+  height:38px; padding:0 18px; border-radius:10px; border:1px solid var(--border);
+  background:var(--surface); color:var(--text); font-size:13.5px; font-weight:500;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.btn:hover{ border-color:var(--brand); color:var(--brand); }
+.btn.primary{ background:var(--brand); border-color:var(--brand); color:#fff; }
+.btn.primary:hover{ background:var(--brand-deep); }
+html[data-theme="dark"] .btn.primary{ color:#0b1220; }
+.btn.danger{ color:#dc2626; border-color:color-mix(in srgb, #dc2626 35%, var(--border)); }
+.btn.danger:hover{ border-color:#dc2626; color:#dc2626; }
+html[data-theme="dark"] .btn.danger{ color:#f87171; }
+.btn-row{ display:flex; gap:10px; flex-wrap:wrap; }
+#syncStatus{ font-size:13px; margin-top:12px; color:var(--muted); min-height:20px; }
+#syncStatus.ok{ color:var(--brand); }
+#syncStatus.err{ color:#dc2626; }
+html[data-theme="dark"] #syncStatus.err{ color:#f87171; }
+
+/* ---------- toast ---------- */
+#toast{
+  position:fixed; left:50%; bottom:28px; transform:translateX(-50%) translateY(20px);
+  background:var(--text); color:var(--bg); padding:10px 20px; border-radius:12px;
+  font-size:13.5px; opacity:0; pointer-events:none; transition:all .25s; z-index:99;
+  max-width:80vw;
+}
+#toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<header>
+  <div class="head-inner">
+    <div class="brand"><span class="logo">✓</span>每日打卡<span class="sub">2026.11.11 → 2027.6.20 · 222 天</span></div>
+    <div class="head-spacer"></div>
+    <button id="themeBtn" title="切换主题">🌙</button>
+  </div>
+  <div class="head-inner">
+    <nav>
+      <button data-view="today" class="active">今日打卡</button>
+      <button data-view="overview">总览</button>
+      <button data-view="stats">统计</button>
+      <button data-view="settings">设置</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ============ 今日打卡 ============ -->
+  <section id="view-today" class="view active">
+    <div class="datebar">
+      <button class="nb" id="prevDay" title="前一天">‹</button>
+      <div id="dateLabel"></div>
+      <button class="nb" id="nextDay" title="后一天">›</button>
+      <button id="btnToday">回到今天</button>
+    </div>
+    <div class="phase-banner" id="phaseBanner"></div>
+    <div class="carryover" id="carryover" hidden>
+      <div><b>昨天留给今天</b><span id="carryoverText"></span></div>
+      <button id="carryoverDone" type="button">知道了</button>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <h2>今日清单</h2>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span id="taskProgress"></span>
+          <span class="status-chip st-none" id="statusChip">未开始</span>
+        </div>
+      </div>
+      <ul id="taskList"></ul>
+      <div class="criteria"><b>完成标准</b><span id="criteriaText"></span></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>打卡记录</h2></div>
+      <div class="rec-grid">
+        <div class="rec-item"><label>技术学习（分钟）· 计划 <span id="planTech"></span></label><input type="number" id="recTech" min="0" placeholder="0"/></div>
+        <div class="rec-item"><label>英语学习（分钟）· 计划 <span id="planEng"></span></label><input type="number" id="recEng" min="0" placeholder="0"/></div>
+        <div class="rec-item full"><label>卡点 / 情绪</label><textarea id="recBlocker" placeholder="今天卡在哪里？心情如何？"></textarea></div>
+        <div class="rec-item"><label>明天第一件事</label><input id="recTomorrow" placeholder="明早坐下先做的那件事"/></div>
+        <div class="rec-item"><label>证据 / 链接</label><input id="recEvidence" placeholder="commit / 截图 / 笔记链接"/></div>
+      </div>
+      <div class="rec-foot">
+        <span id="saveHint">更改自动保存到本地</span>
+        <div class="btn-row">
+          <button class="btn danger" id="btnClearDay" type="button">清空当天</button>
+          <button id="btnAll" type="button">全部勾选</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 总览 ============ -->
+  <section id="view-overview" class="view">
+    <div class="ov-chips" id="ovChips"></div>
+    <div class="card">
+      <div class="card-head"><h2>222 天热力图</h2></div>
+      <div class="heatmap-wrap"><div class="heatmap" id="heatmap"></div></div>
+      <div class="hm-legend">
+        未开始 <i style="background:var(--hm1)"></i>
+        部分 <i style="background:var(--hm2)"></i>
+        过半 <i style="background:var(--hm3)"></i>
+        完成 <i style="background:var(--hm4)"></i>
+      </div>
+      <div class="ov-hint">提示：点击色块可跳转到那一天的打卡页</div>
+    </div>
+  </section>
+
+  <!-- ============ 统计 ============ -->
+  <section id="view-stats" class="view">
+    <div class="kpi-grid" id="kpiGrid"></div>
+    <div class="card">
+      <div class="card-head"><h2>各周完成度</h2></div>
+      <div id="weekBars"></div>
+    </div>
+  </section>
+
+  <!-- ============ 设置 ============ -->
+  <section id="view-settings" class="view">
+    <div class="card">
+      <div class="card-head"><h2>GitHub 云同步</h2></div>
+      <div class="set-note">
+        数据保存为你仓库里的 <b>checkin-data.json</b> 文件。Token 建议「Fine-grained token」，
+        只授权一个私有仓库、仅勾选 <b>Contents: Read and write</b> 权限。<br/>
+        Token 会明文保存在本机 localStorage；共用电脑请用完点「清除 Token」。
+      </div>
+      <div class="set-row"><label><b>Personal Access Token</b></label><input type="password" id="setToken" placeholder="github_pat_... 或 ghp_..."/></div>
+      <div class="set-row"><label><b>仓库</b>（格式：用户名/仓库名）</label><input id="setRepo" placeholder="myname/checkin-data"/></div>
+      <div class="auto-row">
+        <label class="switch">
+          <input type="checkbox" id="setAutoSync"/>
+          <span class="track"></span>
+          <span class="switch-label">打卡后自动同步到 GitHub</span>
+        </label>
+        <span id="autoState" class="auto-state">未开启</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="btnSaveSet">保存设置</button>
+        <button class="btn primary" id="btnTestConn" type="button">测试连接</button>
+        <button class="btn" id="btnCreateRepo" type="button">自动建仓库</button>
+        <button class="btn" id="btnClearToken" type="button">清除 Token</button>
+        <button class="btn primary" id="btnPush">同步到 GitHub</button>
+        <button class="btn" id="btnPull">从 GitHub 恢复</button>
+      </div>
+      <div id="syncStatus"></div>
+      <details class="setup-guide">
+        <summary>第一次配置？点开看三步图文步骤</summary>
+        <ol>
+          <li>
+            <b>创建 Token</b>：打开
+            <a href="https://github.com/settings/tokens/new?scopes=repo&amp;description=checkin-app" target="_blank" rel="noopener">GitHub Token 创建页</a>
+            （已预填 <code>repo</code> 权限）。Note 随便写，Expiration 建议选 90 天或 No expiration，
+            勾选 <code>repo</code>，拉到最下面点 <b>Generate token</b>，复制 <code>ghp_</code> 开头的那串（只显示一次）。
+          </li>
+          <li>
+            <b>粘贴并测试</b>：把 Token 填到上面输入框 → 点「保存设置」→ 点「测试连接」，
+            成功会显示你的 GitHub 用户名。
+          </li>
+          <li>
+            <b>建仓库并同步</b>：点「自动建仓库」（会建一个私有仓库 <code>checkin-data</code>），
+            然后点「同步到 GitHub」，看到勾就完成了。
+          </li>
+        </ol>
+        <p class="guide-tip">换电脑/换浏览器时：填同样的 Token 和仓库，点「从 GitHub 恢复」即可拿回全部记录。</p>
+      </details>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>本地备份</h2></div>
+      <div class="btn-row">
+        <button class="btn" id="btnExport">导出 JSON 文件</button>
+        <button class="btn" id="btnImportBtn">导入 JSON 文件</button>
+        <input type="file" id="btnImport" accept=".json" style="display:none"/>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>危险操作</h2></div>
+      <div class="set-note">
+        重置会删除全部 222 天记录。操作前会自动把当前数据备份到本机；也可以先导出 JSON。
+      </div>
+      <div class="btn-row">
+        <button class="btn danger" id="btnResetAll" type="button">重置全部记录</button>
+        <button class="btn" id="btnRestoreBackup" type="button">恢复上次自动备份</button>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="toast"></div>
+
+<script>
+const DAYS = [{"date": "2026-11-11", "weekday": "周三", "week": "P0-W0a", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["JS 数组 map/filter/find + 模板字符串", "把 docs 渲染成文档列表", "周三深水区：JS 事件循环：Promise/async/await + fetch 错误处理", "基础线：JS 手写 30min：map/filter/find 各 1 例", "英语：六级听力 1 篇 + 生词 10 个", "收尾：commit + 截图/记录 1 行"], "criteria": "docs.map(d => `<li>${d.title}</li>`).join('')", "techMin": 260, "engMin": 20, "knowledge": "JavaScript / DOM / Fetch API"}, {"date": "2026-11-12", "weekday": "周四", "week": "P0-W0a", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["render() 重画", "docs 数组 → render() → 列表更新", "基础线：JS 手写 30min：渲染函数 + 事件初识", "英语：六级阅读 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "改数组后调 render()，列表立即更新", "techMin": 140, "engMin": 20, "knowledge": "JavaScript / DOM / Fetch API"}, {"date": "2026-11-13", "weekday": "周五", "week": "P0-W0a", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["事件委托", "文档列表 ul 挂 click，closest('li[data-id]')", "基础线：JS 手写 30min：事件对象/冒泡", "英语：单词 20 + 听力 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "点文档显示详情/删除；Console 无红字", "techMin": 140, "engMin": 20, "knowledge": "JavaScript / DOM / Fetch API"}, {"date": "2026-11-14", "weekday": "周六", "week": "P0-W0a", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["上传弹窗", "标题 + 文件选择占位", "表单校验", "基础线：JS 手写 30min：表单取值/校验", "英语：只背 10 个单词（补课优先）", "收尾：commit + 截图/记录 1 行"], "criteria": "弹窗能开/关；错误有提示；保存后列表更新", "techMin": 140, "engMin": 20, "knowledge": "JavaScript / DOM / Fetch API"}, {"date": "2026-11-15", "weekday": "周日", "week": "P0-W0a", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["空状态 + 搜索过滤 + fetch GET 预热", "基础线：复盘 30min：6 个 JS 技能自测", "英语：六级阅读 1 套（30 分钟）", "收尾：commit + 截图/记录 1 行"], "criteria": "空列表有提示；搜索过滤正确；fetch 能渲染 mock", "techMin": 120, "engMin": 30, "knowledge": "JavaScript / DOM / Fetch API"}, {"date": "2026-11-16", "weekday": "周一", "week": "P0-W0a", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["后端接口盘点", "/health、/documents GET/POST/DELETE、/search", "基础线：数组/哈希 1 题 + HTTP 方法/状态码", "英语：六级听力 1 篇 + 生词 10 个", "收尾：commit + 截图/记录 1 行"], "criteria": "5 个接口在 /docs 都能调通；截图 1 条", "techMin": 140, "engMin": 20, "knowledge": "Python / FastAPI / HTTP"}, {"date": "2026-11-17", "weekday": "周二", "week": "P0-W0a", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["API_CONTRACT.md", "5 接口 method/path/入参/出参/错误", "基础线：双指针 1 题 + JSON/REST", "英语：六级阅读 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "每接口 1 行；补 3 个错误码", "techMin": 140, "engMin": 20, "knowledge": "Python / FastAPI / HTTP"}, {"date": "2026-11-18", "weekday": "周三", "week": "P0-W0b", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["FastAPI 骨架 + /health + 静态页", "周三深水区：Python 类型注解 + Pydantic v2 + FastAPI Depends", "基础线：链表 1 题 + CORS/JSON", "英语：六级听力 1 篇 + 跟读 10 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "uvicorn 启动；页面能打开", "techMin": 260, "engMin": 20, "knowledge": "Python / FastAPI / SQL / HTTP"}, {"date": "2026-11-19", "weekday": "周四", "week": "P0-W0b", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["`/documents` GET/POST 内存版 + 前端列表", "基础线：栈 1 题 + REST/幂等", "英语：六级阅读 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "上传 1 条；列表显示 1 条", "techMin": 140, "engMin": 20, "knowledge": "Python / FastAPI / SQL / HTTP"}, {"date": "2026-11-20", "weekday": "周五", "week": "P0-W0b", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["`/documents/{id}` DELETE + 前端删除", "基础线：队列 1 题 + MySQL 索引", "英语：单词 20 + 听力 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "删除 1 条；刷新列表正确", "techMin": 140, "engMin": 20, "knowledge": "Python / FastAPI / SQL / HTTP"}, {"date": "2026-11-21", "weekday": "周六", "week": "P0-W0b", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["`/search?q=` mock 返回 top3 + 前端搜索框", "基础线：二叉树 1 题 + 事务", "英语：六级阅读 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "搜索结果展示；空结果有提示", "techMin": 140, "engMin": 20, "knowledge": "Python / FastAPI / SQL / HTTP"}, {"date": "2026-11-22", "weekday": "周日", "week": "P0-W0b", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["MySQL documents 表 + SQLAlchemy 连接", "基础线：排序 1 题 + 进程/线程", "英语：六级听力 1 篇 + 生词 10 个", "收尾：commit + 截图/记录 1 行"], "criteria": "重启服务数据不丢", "techMin": 140, "engMin": 20, "knowledge": "Python / FastAPI / SQL / HTTP"}, {"date": "2026-11-23", "weekday": "周一", "week": "P0-W0b", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["统一响应/全局异常/CORS + 分层目录", "基础线：二分 1 题 + 内存管理", "英语：六级阅读 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "5 接口统一 JSON；错误码可定位", "techMin": 140, "engMin": 20, "knowledge": "Python / FastAPI / SQL / HTTP"}, {"date": "2026-11-24", "weekday": "周二", "week": "P0-W0b", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["Dockerfile + compose(app+mysql) + README", "基础线：递归 1 题 + TCP 握手", "英语：只背 10 个单词（部署优先）", "收尾：commit + 截图/记录 1 行"], "criteria": "compose up 成功；README 有启动命令", "techMin": 140, "engMin": 20, "knowledge": "Python / FastAPI / SQL / HTTP"}, {"date": "2026-11-25", "weekday": "周三", "week": "P0-W1", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["Python 工程化", "模块/包/venv/依赖锁定", "周三深水区：JWT/OAuth2 Password Flow + bcrypt + 401/403", "基础线：哈希 1 题 + HTTP/HTTPS", "英语：六级听力 1 篇 + 生词 10 个", "收尾：commit + 截图/记录 1 行"], "criteria": "能 import app.main 启动", "techMin": 260, "engMin": 20, "knowledge": "Python / FastAPI / Pydantic v2 / JWT"}, {"date": "2026-11-26", "weekday": "周四", "week": "P0-W1", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["异常 + 日志", "统一异常类/logging/request id", "基础线：双指针 1 题 + DNS/URL", "英语：六级阅读 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "接口异常返回 JSON，不返回 traceback", "techMin": 140, "engMin": 20, "knowledge": "Python / FastAPI / Pydantic v2 / JWT"}, {"date": "2026-11-27", "weekday": "周五", "week": "P0-W1", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["Pydantic schema", "请求/响应模型/字段校验", "基础线：二分 1 题 + TCP 三次握手", "英语：六级听力 1 篇 + 跟读 10 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "缺字段返回 422", "techMin": 140, "engMin": 20, "knowledge": "Python / FastAPI / Pydantic v2 / JWT"}, {"date": "2026-11-28", "weekday": "周六", "week": "P0-W1", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["JWT 注册/登录", "bcrypt 哈希 + token", "基础线：排序 1 题 + HTTP/HTTPS", "英语：六级阅读 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "注册/登录成功；错密码 401", "techMin": 140, "engMin": 20, "knowledge": "Python / FastAPI / Pydantic v2 / JWT"}, {"date": "2026-11-29", "weekday": "周日", "week": "P0-W1", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["Depends current_user", "从 token 取用户", "基础线：哈希 1 题 + DNS/URL", "英语：单词 20 + 听力 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "无 token 401；有 token 200", "techMin": 140, "engMin": 20, "knowledge": "Python / FastAPI / Pydantic v2 / JWT"}, {"date": "2026-11-30", "weekday": "周一", "week": "P0-W1", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["文档接口挂 auth + 只操作自己的文档", "基础线：双指针 1 题 + 网络错题", "英语：六级阅读 1 套", "收尾：commit + 截图/记录 1 行"], "criteria": "用户 A 不能看 B 的文档", "techMin": 140, "engMin": 20, "knowledge": "Python / FastAPI / Pydantic v2 / JWT"}, {"date": "2026-12-01", "weekday": "周二", "week": "P0-W1", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["周复盘 + 补漏", "3 条 issue", "基础线：错题 2 题 + 口述 3 分钟", "英语：复盘生词 20 个", "收尾：commit + 截图/记录 1 行"], "criteria": "只补最卡的 1 个", "techMin": 100, "engMin": 20, "knowledge": "Python / FastAPI / Pydantic v2 / JWT"}, {"date": "2026-12-02", "weekday": "周三", "week": "P0-W2", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["表设计 3 张", "users/documents/chunks", "周三深水区：SQLAlchemy 2.0 Session/relationship + MySQL EXPLAIN", "基础线：链表 2 题 + 索引结构", "英语：六级听力 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "ER 图 1 张", "techMin": 260, "engMin": 20, "knowledge": "SQL / MySQL 8 / SQLAlchemy 2.0"}, {"date": "2026-12-03", "weekday": "周四", "week": "P0-W2", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["SQLAlchemy 模型", "User/Document/Chunk + session", "基础线：栈 1 题 + 事务隔离", "英语：六级阅读 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "3 个模型能建表", "techMin": 140, "engMin": 20, "knowledge": "SQL / MySQL 8 / SQLAlchemy 2.0"}, {"date": "2026-12-04", "weekday": "周五", "week": "P0-W2", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["文件上传存储 uploads/ + 类型/大小限制", "基础线：队列 1 题 + 慢查询", "英语：六级听力 1 篇 + 跟读 10 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "pdf/txt/md 可传；exe 拒绝", "techMin": 140, "engMin": 20, "knowledge": "SQL / MySQL 8 / SQLAlchemy 2.0"}, {"date": "2026-12-05", "weekday": "周六", "week": "P0-W2", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["documents CRUD 落 MySQL + 分页", "基础线：二叉树 BFS 1 题 + Redis 缓存", "英语：六级阅读 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "列表支持 limit/offset", "techMin": 140, "engMin": 20, "knowledge": "SQL / MySQL 8 / SQLAlchemy 2.0"}, {"date": "2026-12-06", "weekday": "周日", "week": "P0-W2", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["chunks 表 + ingest_status", "pending/ready/failed", "基础线：DFS 1 题 + 缓存穿透/雪崩", "英语：单词 20 + 听力 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "状态能查", "techMin": 140, "engMin": 20, "knowledge": "SQL / MySQL 8 / SQLAlchemy 2.0"}, {"date": "2026-12-07", "weekday": "周一", "week": "P0-W2", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["事务/级联删除", "删文档删 chunks", "基础线：回溯 1 题 + 数据库错题", "英语：六级听力 1 套", "收尾：commit + 截图/记录 1 行"], "criteria": "删 1 文档，chunks 清零", "techMin": 140, "engMin": 20, "knowledge": "SQL / MySQL 8 / SQLAlchemy 2.0"}, {"date": "2026-12-08", "weekday": "周二", "week": "P0-W2", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["索引/慢查询/复盘", "基础线：错题 2 题 + 口述 3 分钟", "英语：复盘生词 20 个", "收尾：commit + 截图/记录 1 行"], "criteria": "EXPLAIN + 加索引 1 条", "techMin": 100, "engMin": 20, "knowledge": "SQL / MySQL 8 / SQLAlchemy 2.0"}, {"date": "2026-12-09", "weekday": "周三", "week": "P0-W3", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["上传接口完善", "多文件/同名/空文件", "周三深水区：multipart/form-data + pathlib/mimetypes + BackgroundTasks", "基础线：DP 1 题 + OS 调度", "英语：六级听力 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "3 种边界有错误提示", "techMin": 260, "engMin": 20, "knowledge": "Python / FastAPI / multipart / pathlib"}, {"date": "2026-12-10", "weekday": "周四", "week": "P0-W3", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["文件元数据", "size/mime/created_at", "基础线：DP 1 题 + 死锁", "英语：六级阅读 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "列表能看到元数据", "techMin": 140, "engMin": 20, "knowledge": "Python / FastAPI / multipart / pathlib"}, {"date": "2026-12-11", "weekday": "周五", "week": "P0-W3", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["文档状态接口 + 前端轮询", "基础线：贪心 1 题 + 网络分层", "英语：六级听力 1 篇 + 跟读 10 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "pending→ready 能刷新", "techMin": 140, "engMin": 20, "knowledge": "Python / FastAPI / multipart / pathlib"}, {"date": "2026-12-12", "weekday": "周六", "week": "P0-W3", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["CET-6 考试，技术 0", "收尾：commit + 截图/记录 1 行"], "criteria": "考完", "techMin": 0, "engMin": 0, "knowledge": "Python / FastAPI / multipart / pathlib"}, {"date": "2026-12-13", "weekday": "周日", "week": "P0-W3", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["考后休息/复盘 1 条", "收尾：commit + 截图/记录 1 行"], "criteria": "不补作业", "techMin": 0, "engMin": 0, "knowledge": "Python / FastAPI / multipart / pathlib"}, {"date": "2026-12-14", "weekday": "周一", "week": "P0-W3", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["删除/重传/状态异常处理", "基础线：二分 1 题 + HTTP 缓存", "英语：六级阅读 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "失败状态可重试", "techMin": 140, "engMin": 20, "knowledge": "Python / FastAPI / multipart / pathlib"}, {"date": "2026-12-15", "weekday": "周二", "week": "P0-W3", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["上传/列表/删除 pytest 5 条", "基础线：排序 1 题 + 数据库范式", "英语：单词 20 + 听力 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "pytest 5 条全绿", "techMin": 140, "engMin": 20, "knowledge": "Python / FastAPI / multipart / pathlib"}, {"date": "2026-12-16", "weekday": "周三", "week": "P0-W4", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["后台任务 mock ingest", "pending→ready", "周三深水区：Docker 多阶段构建 + Compose healthcheck + Nginx 反代", "基础线：哈希 1 题 + 项目八股", "英语：六级听力 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "上传后状态自动变 ready", "techMin": 260, "engMin": 20, "knowledge": "Python / pytest / Docker / Nginx"}, {"date": "2026-12-17", "weekday": "周四", "week": "P0-W4", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["`/search` 关键词 mock", "title/filename 匹配", "基础线：链表 1 题 + 项目八股", "英语：六级阅读 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "搜 1 个词返回 1 条", "techMin": 140, "engMin": 20, "knowledge": "Python / pytest / Docker / Nginx"}, {"date": "2026-12-18", "weekday": "周五", "week": "P0-W4", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["搜索 API 分页/空结果/参数校验", "基础线：栈 1 题 + 项目八股", "英语：六级听力 1 篇 + 跟读", "收尾：commit + 截图/记录 1 行"], "criteria": "3 种情况正确", "techMin": 140, "engMin": 20, "knowledge": "Python / pytest / Docker / Nginx"}, {"date": "2026-12-19", "weekday": "周六", "week": "P0-W4", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["错误处理/限流/文件大小边界", "基础线：队列 1 题 + 项目八股", "英语：六级阅读 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "4xx 返回统一 JSON", "techMin": 140, "engMin": 20, "knowledge": "Python / pytest / Docker / Nginx"}, {"date": "2026-12-20", "weekday": "周日", "week": "P0-W4", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["文档接口权限 + JWT 全链路", "基础线：二叉树 1 题 + 项目八股", "英语：单词 20 + 听力 1 篇", "收尾：commit + 截图/记录 1 行"], "criteria": "未登录 401；登录后 200", "techMin": 140, "engMin": 20, "knowledge": "Python / pytest / Docker / Nginx"}, {"date": "2026-12-21", "weekday": "周一", "week": "P0-W4", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["pytest 8 条", "auth/doc/search", "基础线：排序 1 题 + 部署八股", "英语：六级阅读 1 套", "收尾：commit + 截图/记录 1 行"], "criteria": "8 条全绿", "techMin": 140, "engMin": 20, "knowledge": "Python / pytest / Docker / Nginx"}, {"date": "2026-12-22", "weekday": "周二", "week": "P0-W4", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["P0 阶段复盘 + 补漏", "基础线：错题 2 题 + 口述", "英语：复盘生词 20 个", "收尾：commit + 截图/记录 1 行"], "criteria": "只补最卡 1 个", "techMin": 100, "engMin": 20, "knowledge": "Python / pytest / Docker / Nginx"}, {"date": "2026-12-23", "weekday": "周三", "week": "P0-W5", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["期末复习", "技术 ≤1h，只修 bug", "基础线：错题 1 题/20min", "收尾：commit + 截图/记录 1 行"], "criteria": "复习 1 章", "techMin": 60, "engMin": 0, "knowledge": "Python / pytest / 复盘"}, {"date": "2026-12-24", "weekday": "周四", "week": "P0-W5", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["期末复习", "技术 ≤1h，只修 bug", "基础线：错题 1 题/20min", "收尾：commit + 截图/记录 1 行"], "criteria": "复习 1 章", "techMin": 60, "engMin": 0, "knowledge": "Python / pytest / 复盘"}, {"date": "2026-12-25", "weekday": "周五", "week": "P0-W5", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["只修 1 个 bug/issue", "基础线：错题 1 题", "收尾：commit + 截图/记录 1 行"], "criteria": "修 1 个", "techMin": 60, "engMin": 0, "knowledge": "Python / pytest / 复盘"}, {"date": "2026-12-26", "weekday": "周六", "week": "P0-W5", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["考试周", "技术 0", "基础线：错题 1 题", "收尾：commit + 截图/记录 1 行"], "criteria": "考试", "techMin": 0, "engMin": 0, "knowledge": "Python / pytest / 复盘"}, {"date": "2026-12-27", "weekday": "周日", "week": "P0-W5", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["复习 1 章", "技术 0", "基础线：错题 1 题", "收尾：commit + 截图/记录 1 行"], "criteria": "复习 1 章", "techMin": 0, "engMin": 0, "knowledge": "Python / pytest / 复盘"}, {"date": "2026-12-28", "weekday": "周一", "week": "P0-W5", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["错题卡片 30min", "技术 0", "基础线：错题 1 题", "收尾：commit + 截图/记录 1 行"], "criteria": "看错题", "techMin": 0, "engMin": 0, "knowledge": "Python / pytest / 复盘"}, {"date": "2026-12-29", "weekday": "周二", "week": "P0-W5", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["周复盘", "技术 0", "基础线：错题 1 题", "收尾：commit + 截图/记录 1 行"], "criteria": "复盘 1 页", "techMin": 0, "engMin": 0, "knowledge": "Python / pytest / 复盘"}, {"date": "2026-12-30", "weekday": "周三", "week": "P0-W6", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["考试", "技术 0", "收尾：commit + 截图/记录 1 行"], "criteria": "考完", "techMin": 0, "engMin": 0, "knowledge": "Python / pytest / 复盘"}, {"date": "2026-12-31", "weekday": "周四", "week": "P0-W6", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["考试", "技术 0", "收尾：commit + 截图/记录 1 行"], "criteria": "考完", "techMin": 0, "engMin": 0, "knowledge": "Python / pytest / 复盘"}, {"date": "2027-01-01", "weekday": "周五", "week": "P0-W6", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["休息", "技术 0", "收尾：commit + 截图/记录 1 行"], "criteria": "休息", "techMin": 0, "engMin": 0, "knowledge": "Python / pytest / 复盘"}, {"date": "2027-01-02", "weekday": "周六", "week": "P0-W6", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["考试", "技术 0", "收尾：commit + 截图/记录 1 行"], "criteria": "考完", "techMin": 0, "engMin": 0, "knowledge": "Python / pytest / 复盘"}, {"date": "2027-01-03", "weekday": "周日", "week": "P0-W6", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["考完休息", "技术 0", "收尾：commit + 截图/记录 1 行"], "criteria": "休息", "techMin": 0, "engMin": 0, "knowledge": "Python / pytest / 复盘"}, {"date": "2027-01-04", "weekday": "周一", "week": "P0-W6", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["P1 预热", "DocMind 前端骨架（侧边栏/文档列表/上传区）", "基础线：HTML/CSS 30min", "收尾：commit + 截图/记录 1 行"], "criteria": "页面能打开", "techMin": 120, "engMin": 0, "knowledge": "Python / pytest / 复盘"}, {"date": "2027-01-05", "weekday": "周二", "week": "P0-W6", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["P1 预热", "文档列表 mock + 空状态", "基础线：JS 30min", "收尾：commit + 截图/记录 1 行"], "criteria": "3 条假数据 + 空状态", "techMin": 120, "engMin": 0, "knowledge": "Python / pytest / 复盘"}, {"date": "2027-01-06", "weekday": "周三", "week": "P0-W7", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["pytest 全量 + 覆盖率", "基础线：JS 30min", "收尾：commit + 截图/记录 1 行"], "criteria": "8-10 条全绿", "techMin": 120, "engMin": 0, "knowledge": "Docker / Linux / Nginx"}, {"date": "2027-01-07", "weekday": "周四", "week": "P0-W7", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["Docker compose 全链路", "基础线：JS 30min", "收尾：commit + 截图/记录 1 行"], "criteria": "app+mysql 一条命令", "techMin": 140, "engMin": 0, "knowledge": "Docker / Linux / Nginx"}, {"date": "2027-01-08", "weekday": "周五", "week": "P0-W7", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["云服务器部署", "基础线：JS 30min", "收尾：commit + 截图/记录 1 行"], "criteria": "IP:8000 可访问", "techMin": 140, "engMin": 0, "knowledge": "Docker / Linux / Nginx"}, {"date": "2027-01-09", "weekday": "周六", "week": "P0-W7", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["Nginx 反代 + HTTPS", "基础线：JS 30min", "收尾：commit + 截图/记录 1 行"], "criteria": "域名 https 200", "techMin": 140, "engMin": 0, "knowledge": "Docker / Linux / Nginx"}, {"date": "2027-01-10", "weekday": "周日", "week": "P0-W7", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["README", "架构图/接口/启动/排障", "基础线：复盘 30min", "收尾：commit + 截图/记录 1 行"], "criteria": "README 完整", "techMin": 140, "engMin": 0, "knowledge": "Docker / Linux / Nginx"}, {"date": "2027-01-11", "weekday": "周一", "week": "P0-W7", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["3 分钟 demo 录屏", "基础线：HTML/CSS 30min", "英语：技术文档 0.5h", "收尾：commit + 截图/记录 1 行"], "criteria": "能讲清上传→列表→搜索", "techMin": 120, "engMin": 0, "knowledge": "Docker / Linux / Nginx"}, {"date": "2027-01-12", "weekday": "周二", "week": "P0-W7", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["找 2 个同学试用 + 3 条反馈", "收尾：commit + 截图/记录 1 行"], "criteria": "3 条反馈记录", "techMin": 100, "engMin": 0, "knowledge": "Docker / Linux / Nginx"}, {"date": "2027-01-13", "weekday": "周三", "week": "P0-W8", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["P0 验收", "5 接口/上传/JWT/测试/Docker/README", "基础线：数组/哈希 1 题", "英语：六级 0.5h", "收尾：commit + 截图/记录 1 行"], "criteria": "7 项全过", "techMin": 100, "engMin": 0, "knowledge": "FastAPI / JavaScript 联调"}, {"date": "2027-01-14", "weekday": "周四", "week": "P0-W8", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["补验收缺口", "基础线：双指针 1 题", "英语：技术文档 0.5h", "收尾：commit + 截图/记录 1 行"], "criteria": "只补最卡 1 项", "techMin": 100, "engMin": 0, "knowledge": "FastAPI / JavaScript 联调"}, {"date": "2027-01-15", "weekday": "周五", "week": "P0-W8", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["P1 启动", "文档管理页布局", "基础线：链表 1 题", "英语：六级 0.5h", "收尾：commit + 截图/记录 1 行"], "criteria": "页面能打开", "techMin": 140, "engMin": 0, "knowledge": "FastAPI / JavaScript 联调"}, {"date": "2027-01-16", "weekday": "周六", "week": "P0-W8", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["P1", "fetch /documents 列表 + loading/empty", "基础线：栈 1 题", "英语：技术文档 0.5h", "收尾：commit + 截图/记录 1 行"], "criteria": "真实数据渲染", "techMin": 140, "engMin": 0, "knowledge": "FastAPI / JavaScript 联调"}, {"date": "2027-01-17", "weekday": "周日", "week": "P0-W8", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["P1", "上传表单 + 进度/错误", "基础线：队列 1 题", "英语：六级 0.5h", "收尾：commit + 截图/记录 1 行"], "criteria": "上传成功/失败提示", "techMin": 140, "engMin": 0, "knowledge": "FastAPI / JavaScript 联调"}, {"date": "2027-01-18", "weekday": "周一", "week": "P0-W8", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["P1", "删除确认 + 状态刷新", "基础线：二叉树 1 题", "英语：技术文档 0.5h", "收尾：commit + 截图/记录 1 行"], "criteria": "删除后列表更新", "techMin": 140, "engMin": 0, "knowledge": "FastAPI / JavaScript 联调"}, {"date": "2027-01-19", "weekday": "周二", "week": "P0-W8", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["P0 复盘 + 简历 v0", "基础线：排序 1 题", "英语：六级 0.5h", "收尾：commit + 截图/记录 1 行"], "criteria": "简历 1 页", "techMin": 100, "engMin": 0, "knowledge": "FastAPI / JavaScript 联调"}, {"date": "2027-01-20", "weekday": "周三", "week": "P0-W8", "phase": "P0 地基｜2026.11.11-2027.1.20｜DocMind 后端：文档上传/管理/检索 mock/JWT/部署", "tasks": ["缓冲/补漏", "基础线：错题 2 题", "收尾：commit + 截图/记录 1 行"], "criteria": "补 1 项", "techMin": 80, "engMin": 0, "knowledge": "FastAPI / JavaScript 联调"}, {"date": "2027-01-21", "weekday": "周四", "week": "P1-W1", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["DocMind 前端骨架", "侧边栏/顶部栏/文档列表/上传区", "基础线：数组/哈希 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "页面能打开，布局不塌", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-01-22", "weekday": "周五", "week": "P1-W1", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["fetch /documents", "列表渲染 + loading/empty", "基础线：双指针 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "真实数据渲染；空状态可见", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-01-23", "weekday": "周六", "week": "P1-W1", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["上传表单", "文件选择 + 标题 + 进度条", "基础线：链表 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "上传成功/失败提示", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-01-24", "weekday": "周日", "week": "P1-W1", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["删除确认", "confirm + 删除后刷新", "基础线：栈 1 题 + 项目八股", "英语：复盘 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "删除 1 条", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-01-25", "weekday": "周一", "week": "P1-W1", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["文档状态", "pending/ready/failed + 轮询", "基础线：队列 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "状态自动更新", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-01-26", "weekday": "周二", "week": "P1-W1", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["错误处理", "401/413/500 + toast", "基础线：二叉树 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "3 种错误有提示", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-01-27", "weekday": "周三", "week": "P1-W1", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["周复盘", "3 条 issue", "基础线：错题 2 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "补 1 个", "techMin": 100, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-01-28", "weekday": "周四", "week": "P1-W2", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["搜索框 + 结果列表", "/search?q=", "基础线：排序 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "输入关键词出结果", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-01-29", "weekday": "周五", "week": "P1-W2", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["结果卡片", "文件名/片段/score", "基础线：二分 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "3 条结果可读", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-01-30", "weekday": "周六", "week": "P1-W2", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["空结果/加载/错误三态", "基础线：递归 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "三态都能看到", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-01-31", "weekday": "周日", "week": "P1-W2", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["搜索历史 localStorage", "基础线：哈希 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "最近 5 条", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-01", "weekday": "周一", "week": "P1-W2", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["文档详情", "chunk 列表/预览", "基础线：DP 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "点文档看 chunks", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-02", "weekday": "周二", "week": "P1-W2", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["键盘/移动端/响应式", "基础线：错题 2 题 + 口述", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "手机不横向滚动", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-03", "weekday": "周三", "week": "P1-W2", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["复盘", "搜索体验", "基础线：错题 2 题", "英语：复盘 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "改 3 个点", "techMin": 100, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-04", "weekday": "周四", "week": "P1-W3", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["chat 页布局", "消息列表/输入框/发送", "基础线：图 BFS 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "页面能打开", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-05", "weekday": "周五", "week": "P1-W3", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["发送/回车/清空 + 假消息", "基础线：DFS 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "能发 1 条", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-06", "weekday": "周六", "week": "P1-W3", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["fetch /ask 非流式", "基础线：回溯 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "拿到 1 条回答", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-07", "weekday": "周日", "week": "P1-W3", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["SSE 逐字渲染", "基础线：贪心 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "逐字出现", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-08", "weekday": "周一", "week": "P1-W3", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["引用 [1][2] 可点击 + 来源卡片", "基础线：DP 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "点引用看来源", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-09", "weekday": "周二", "week": "P1-W3", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["加载/错误/重试", "基础线：错题 3 题 + 网络", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "断流有提示", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-10", "weekday": "周三", "week": "P1-W3", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["复盘", "chat 交互", "基础线：错题 2 题", "英语：复盘 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "改 3 个点", "techMin": 100, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-11", "weekday": "周四", "week": "P1-W4", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["/ask 接 P0 文档", "context 拼装 + prompt", "基础线：OS 进程/线程 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "回答基于文档", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-12", "weekday": "周五", "week": "P1-W4", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["拒答", "无依据不说 + 提示", "基础线：内存管理 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "问无关问题会拒答", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-13", "weekday": "周六", "week": "P1-W4", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["引用映射", "answer→sources", "基础线：TCP 握手 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "每个引用有来源", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-14", "weekday": "周日", "week": "P1-W4", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["多轮历史", "只带最近 3 轮", "基础线：HTTP 缓存 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "追问能接上", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-15", "weekday": "周一", "week": "P1-W4", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["延迟/token 日志", "基础线：DB 索引 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "每次记录 1 行", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-16", "weekday": "周二", "week": "P1-W4", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["5 问手测 + 失败分类", "基础线：事务 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "5 问结果表", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-17", "weekday": "周三", "week": "P1-W4", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["复盘", "答案质量", "基础线：错题 2 题", "英语：复盘 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "改 3 个点", "techMin": 100, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-18", "weekday": "周四", "week": "P1-W5", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["Docker 前端静态 + Nginx 反代", "基础线：Redis 缓存 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "一条命令启动", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-19", "weekday": "周五", "week": "P1-W5", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["云服务器部署 + HTTPS", "基础线：消息队列 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "公网 https 可开", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-20", "weekday": "周六", "week": "P1-W5", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["2 个同学试用", "基础线：系统设计入门 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "2 人完成上传/搜索/问答", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-21", "weekday": "周日", "week": "P1-W5", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["10 条反馈记录", "基础线：项目八股 + 部署排障", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "10 条", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-22", "weekday": "周一", "week": "P1-W5", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["修 3 个高频问题", "基础线：项目八股 + 口述", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "3 个修复", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-23", "weekday": "周二", "week": "P1-W5", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["README/架构图/接口文档", "基础线：错题 2 题", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "完整", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-24", "weekday": "周三", "week": "P1-W5", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["复盘/下周计划", "基础线：错题 2 题", "英语：复盘 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "1 页", "techMin": 100, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-25", "weekday": "周四", "week": "P1-W6", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["3 分钟 demo 录屏", "基础线：错题 2 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "能讲清 3 层", "techMin": 120, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-26", "weekday": "周五", "week": "P1-W6", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["简历 v1 bullet", "量化 + trade-off + badcase", "基础线：错题 2 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "3 行", "techMin": 120, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-27", "weekday": "周六", "week": "P1-W6", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["投递清单", "2027 日常实习 10 家", "基础线：错题 2 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "10 家", "techMin": 100, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-02-28", "weekday": "周日", "week": "P1-W6", "phase": "P1 上线｜2027.1.21-2.28｜DocMind Web：文档管理/搜索/对话/SSE/引用/公网", "tasks": ["收尾/缓冲", "基础线：错题 2 题", "英语：复盘 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "补 1 项", "techMin": 80, "engMin": 15, "knowledge": "JavaScript / Fetch / SSE / Nginx"}, {"date": "2027-03-01", "weekday": "周一", "week": "P2-W1", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["RAG 模块骨架", "在 DocMind 后端新增 rag/ 包 + /ask mock", "基础线：数组/哈希 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "`/ask` 返回 mock；/health 200", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-03-02", "weekday": "周二", "week": "P2-W1", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["LLM client", "DeepSeek/GLM OpenAI 兼容 + prompt 模板", "基础线：双指针 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "curl 返回 1 条回答", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-03-03", "weekday": "周三", "week": "P2-W1", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["Prompt 模板", "context + question + 引用要求", "基础线：链表 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "改模板能换回答风格", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-03-04", "weekday": "周四", "week": "P2-W1", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["Mock 检索", "返回 2 条假 chunk + 来源", "基础线：栈 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "回答带 2 条来源", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-03-05", "weekday": "周五", "week": "P2-W1", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["错误处理", "无 key/超时/空检索", "基础线：队列 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "3 种错误有提示", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-03-06", "weekday": "周六", "week": "P2-W1", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["联调 3 个文档 + 5 问（mock）", "基础线：二叉树 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "5 问有 3 条可用", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-03-07", "weekday": "周日", "week": "P2-W1", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["复盘", "RAG 骨架/目录/坑", "基础线：错题 2 题", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "1 页复盘", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-03-08", "weekday": "周一", "week": "P2-W2", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["txt/md 读取", "编码/空行/标题", "基础线：排序 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：txt/md 读取：编码/空行/标题；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / 文本解析 / 切块"}, {"date": "2027-03-09", "weekday": "周二", "week": "P2-W2", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["清洗", "去空行/页眉页脚/重复", "基础线：二分 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：清洗：去空行/页眉页脚/重复；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / 文本解析 / 切块"}, {"date": "2027-03-10", "weekday": "周三", "week": "P2-W2", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["chunk", "500 字 / 80 overlap，按段落", "基础线：递归 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：chunk：500 字 / 80 overlap，按段落；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / 文本解析 / 切块"}, {"date": "2027-03-11", "weekday": "周四", "week": "P2-W2", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["chunk 元数据", "doc_id/chunk_id/source", "基础线：哈希 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：chunk 元数据：doc_id/chunk_id/source；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / 文本解析 / 切块"}, {"date": "2027-03-12", "weekday": "周五", "week": "P2-W2", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["3 组 size/overlap 对比，记录 chunk 数", "基础线：DP 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：3 组 size/overlap 对比，记录 chunk 数；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / 文本解析 / 切块"}, {"date": "2027-03-13", "weekday": "周六", "week": "P2-W2", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["选一组参数 + 记录原因", "基础线：错题 2 题", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：选一组参数 + 记录原因；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / 文本解析 / 切块"}, {"date": "2027-03-14", "weekday": "周日", "week": "P2-W2", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["复盘", "切块质量", "基础线：复盘 30 分钟", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：复盘：切块质量；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / 文本解析 / 切块"}, {"date": "2027-03-15", "weekday": "周一", "week": "P2-W3", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["FastEmbed 安装 + bge-small-zh-v1.5 加载", "基础线：图 BFS 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：FastEmbed 安装 + bge-small-zh-v1.5 加载；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastEmbed / Chroma"}, {"date": "2027-03-16", "weekday": "周二", "week": "P2-W3", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["批量 embedding", "文本→向量", "基础线：DFS 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：批量 embedding：文本→向量；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastEmbed / Chroma"}, {"date": "2027-03-17", "weekday": "周三", "week": "P2-W3", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["Chroma collection", "创建/清空", "基础线：回溯 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：Chroma collection：创建/清空；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastEmbed / Chroma"}, {"date": "2027-03-18", "weekday": "周四", "week": "P2-W3", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["入库 3 个文档的 chunks", "基础线：贪心 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：入库 3 个文档的 chunks；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastEmbed / Chroma"}, {"date": "2027-03-19", "weekday": "周五", "week": "P2-W3", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["相似度查询 top-5", "基础线：DP 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：相似度查询 top-5；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastEmbed / Chroma"}, {"date": "2027-03-20", "weekday": "周六", "week": "P2-W3", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["持久化/重建索引", "基础线：错题 2 题", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：持久化/重建索引；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastEmbed / Chroma"}, {"date": "2027-03-21", "weekday": "周日", "week": "P2-W3", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["复盘", "向量/collection", "基础线：复盘 30 分钟", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：复盘：向量/collection；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastEmbed / Chroma"}, {"date": "2027-03-22", "weekday": "周一", "week": "P2-W4", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["BM25：jieba 分词 + rank_bm25 建倒排", "build_bm25() 能召回 3 篇文档", "基础线：OS 进程/线程 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "3 篇文档能按关键词召回", "techMin": 160, "engMin": 15, "knowledge": "Python / rank_bm25 / RRF / bge-reranker"}, {"date": "2027-03-23", "weekday": "周二", "week": "P2-W4", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["dense：Chroma top10 + 余弦相似度", "query → embedding → collection.query", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "dense 返回 top10", "techMin": 160, "engMin": 15, "knowledge": "Python / rank_bm25 / RRF / bge-reranker"}, {"date": "2027-03-24", "weekday": "周三", "week": "P2-W4", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["RRF 融合：k=60，BM25+dense 合并", "rrf_fuse(bm25_ids, dense_ids)", "基础线：TCP 握手 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "融合结果稳定，不丢来源", "techMin": 160, "engMin": 15, "knowledge": "Python / rank_bm25 / RRF / bge-reranker"}, {"date": "2027-03-25", "weekday": "周四", "week": "P2-W4", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["rerank：bge-reranker-base top20→top5", "CrossEncoder.predict(pairs)", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "top5 有来源且相关性更好", "techMin": 160, "engMin": 15, "knowledge": "Python / rank_bm25 / RRF / bge-reranker"}, {"date": "2027-03-26", "weekday": "周五", "week": "P2-W4", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["/search?mode=hybrid 返回 scores+sources", "FastAPI 查询参数 + 统一响应", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "接口返回 fused_score/source", "techMin": 160, "engMin": 15, "knowledge": "Python / rank_bm25 / RRF / bge-reranker"}, {"date": "2027-03-27", "weekday": "周六", "week": "P2-W4", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["10 个 query 评测：hit@4/延迟表", "eval.csv + 1 张汇总表", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "10 行结果表，失败分类", "techMin": 160, "engMin": 15, "knowledge": "Python / rank_bm25 / RRF / bge-reranker"}, {"date": "2027-03-28", "weekday": "周日", "week": "P2-W4", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["复盘：混合 vs 纯向量差异", "记录 3 条差异/取舍", "基础线：错题 2 题", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "1 页对比笔记", "techMin": 160, "engMin": 15, "knowledge": "Python / rank_bm25 / RRF / bge-reranker"}, {"date": "2027-03-29", "weekday": "周一", "week": "P2-W5", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["Prompt 模板", "context + question + 引用要求", "基础线：Redis 缓存 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：Prompt 模板：context + question + 引用要求；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / Prompt / 引用"}, {"date": "2027-03-30", "weekday": "周二", "week": "P2-W5", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["引用 [1][2] + 来源列表", "基础线：消息队列 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：引用 [1][2] + 来源列表；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / Prompt / 引用"}, {"date": "2027-03-31", "weekday": "周三", "week": "P2-W5", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["无依据拒答", "资料没有就说不知道", "基础线：系统设计入门 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：无依据拒答：资料没有就说不知道；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / Prompt / 引用"}, {"date": "2027-04-01", "weekday": "周四", "week": "P2-W5", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["温度/长度/超时参数", "基础线：项目八股 + 追问", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：温度/长度/超时参数；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / Prompt / 引用"}, {"date": "2027-04-02", "weekday": "周五", "week": "P2-W5", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["5 问测试", "有依据/无依据", "基础线：部署排障 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：5 问测试：有依据/无依据；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / Prompt / 引用"}, {"date": "2027-04-03", "weekday": "周六", "week": "P2-W5", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["修 2 个回答", "基础线：错题 2 题", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：修 2 个回答；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / Prompt / 引用"}, {"date": "2027-04-04", "weekday": "周日", "week": "P2-W5", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["复盘", "引用/拒答", "基础线：复盘 30 分钟", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：复盘：引用/拒答；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / Prompt / 引用"}, {"date": "2027-04-05", "weekday": "周一", "week": "P2-W6", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["SSE", "StreamingResponse + yield", "基础线：数组/哈希 1 题 + 网络", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：SSE：StreamingResponse + yield；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / SSE / ReadableStream"}, {"date": "2027-04-06", "weekday": "周二", "week": "P2-W6", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["前端 reader 逐字显示", "基础线：双指针 1 题 + 网络", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：前端 reader 逐字显示；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / SSE / ReadableStream"}, {"date": "2027-04-07", "weekday": "周三", "week": "P2-W6", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["流式错误/中断提示", "基础线：链表 1 题 + 网络", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：流式错误/中断提示；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / SSE / ReadableStream"}, {"date": "2027-04-08", "weekday": "周四", "week": "P2-W6", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["超时/重试", "基础线：栈 1 题 + 网络", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：超时/重试；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / SSE / ReadableStream"}, {"date": "2027-04-09", "weekday": "周五", "week": "P2-W6", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["3 个流式场景测试", "基础线：队列 1 题 + 网络", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：3 个流式场景测试；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / SSE / ReadableStream"}, {"date": "2027-04-10", "weekday": "周六", "week": "P2-W6", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["录屏 30 秒", "基础线：二叉树 1 题 + 网络", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：录屏 30 秒；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / SSE / ReadableStream"}, {"date": "2027-04-11", "weekday": "周日", "week": "P2-W6", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["复盘", "流式", "基础线：错题 2 题", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：复盘：流式；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "JavaScript / SSE / ReadableStream"}, {"date": "2027-04-12", "weekday": "周一", "week": "P2-W7", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["Vite + React + TS：npm create vite@latest docmind-web -- --template react-ts", "src/App.tsx 能启动；3 个路由占位", "基础线：排序 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "npm run dev 打开 /documents", "techMin": 160, "engMin": 15, "knowledge": "TypeScript / React / Vite"}, {"date": "2027-04-13", "weekday": "周二", "week": "P2-W7", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["React Router：/documents /search /chat 三页 + 布局", "路由切换不刷新；导航高亮", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "3 页可点", "techMin": 160, "engMin": 15, "knowledge": "TypeScript / React / Vite"}, {"date": "2027-04-14", "weekday": "周三", "week": "P2-W7", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["chat 状态：messages/input/loading + fetch('/ask')", "POST /ask 返回 ReadableStream；TextDecoder 逐字", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "页面逐字输出", "techMin": 160, "engMin": 15, "knowledge": "TypeScript / React / Vite"}, {"date": "2027-04-15", "weekday": "周四", "week": "P2-W7", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["SSE 解析：data: 行 + [DONE] + sources 事件", "parseSSE() 处理 chunk 边界", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "引用/正文分开", "techMin": 160, "engMin": 15, "knowledge": "TypeScript / React / Vite"}, {"date": "2027-04-16", "weekday": "周五", "week": "P2-W7", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["停止/错误/空态：AbortController + 重试", "点停止立即中断；错误可重试", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "不刷新页面", "techMin": 160, "engMin": 15, "knowledge": "TypeScript / React / Vite"}, {"date": "2027-04-17", "weekday": "周六", "week": "P2-W7", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["AI SDK 7 spike：useChat + 自定义 ChatTransport", "custom transport 把 FastAPI SSE 转 UIMessageChunk", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "4h 不通就保留 native fetch", "techMin": 160, "engMin": 15, "knowledge": "TypeScript / React / Vite"}, {"date": "2027-04-18", "weekday": "周日", "week": "P2-W7", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["构建部署：npm run build + Nginx 静态 + 移动端", "dist 可被 Nginx 打开；375px 不横滚", "基础线：复盘 30 分钟", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "公网 chat 可用", "techMin": 160, "engMin": 15, "knowledge": "TypeScript / React / Vite"}, {"date": "2027-04-19", "weekday": "周一", "week": "P2-W8", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["20 条 QA", "10 可答/5 不可答/5 边界", "基础线：图 BFS 1 题 + RAG 八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：20 条 QA：10 可答/5 不可答/5 边界；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / RAGAS / hit@4"}, {"date": "2027-04-20", "weekday": "周二", "week": "P2-W8", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["跑 20 问，记录答案/来源", "基础线：DFS 1 题 + RAG 八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：跑 20 问，记录答案/来源；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / RAGAS / hit@4"}, {"date": "2027-04-21", "weekday": "周三", "week": "P2-W8", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["hit@4 统计", "基础线：回溯 1 题 + RAG 八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：hit@4 统计；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / RAGAS / hit@4"}, {"date": "2027-04-22", "weekday": "周四", "week": "P2-W8", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["失败分类", "切块/检索/生成/引用", "基础线：贪心 1 题 + RAG 八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：失败分类：切块/检索/生成/引用；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / RAGAS / hit@4"}, {"date": "2027-04-23", "weekday": "周五", "week": "P2-W8", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["补 5 条问题", "基础线：DP 1 题 + RAG 八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：补 5 条问题；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / RAGAS / hit@4"}, {"date": "2027-04-24", "weekday": "周六", "week": "P2-W8", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["eval.md 第一版", "基础线：错题 2 题", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：eval.md 第一版；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / RAGAS / hit@4"}, {"date": "2027-04-25", "weekday": "周日", "week": "P2-W8", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["复盘", "评测", "基础线：复盘 30 分钟", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：复盘：评测；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / RAGAS / hit@4"}, {"date": "2027-04-26", "weekday": "周一", "week": "P2-W9", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["分析 top-3 未命中", "基础线：数组/哈希 1 题 + 评测", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：分析 top-3 未命中；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / RAGAS / hit@4"}, {"date": "2027-04-27", "weekday": "周二", "week": "P2-W9", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["调 chunk size/overlap", "基础线：双指针 1 题 + 评测", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：调 chunk size/overlap；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / RAGAS / hit@4"}, {"date": "2027-04-28", "weekday": "周三", "week": "P2-W9", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["调 top-k", "基础线：链表 1 题 + 评测", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：调 top-k；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / RAGAS / hit@4"}, {"date": "2027-04-29", "weekday": "周四", "week": "P2-W9", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["重跑 20 问", "基础线：栈 1 题 + 评测", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：重跑 20 问；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / RAGAS / hit@4"}, {"date": "2027-04-30", "weekday": "周五", "week": "P2-W9", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["对比表", "改前/改后", "基础线：队列 1 题 + 评测", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：对比表：改前/改后；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / RAGAS / hit@4"}, {"date": "2027-05-01", "weekday": "周六", "week": "P2-W9", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["写 eval.md", "基础线：二叉树 1 题 + 评测", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：写 eval.md；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / RAGAS / hit@4"}, {"date": "2027-05-02", "weekday": "周日", "week": "P2-W9", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["复盘", "提升", "基础线：错题 2 题", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：复盘：提升；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / RAGAS / hit@4"}, {"date": "2027-05-03", "weekday": "周一", "week": "P2-W10", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["全局异常 + 统一错误 JSON", "基础线：OS 调度 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：全局异常 + 统一错误 JSON；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-04", "weekday": "周二", "week": "P2-W10", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["请求日志", "query/latency/top-k", "基础线：死锁 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：请求日志：query/latency/top-k；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-05", "weekday": "周三", "week": "P2-W10", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["超时/重试/降级", "基础线：TCP 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：超时/重试/降级；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-06", "weekday": "周四", "week": "P2-W10", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["空结果/拒答", "基础线：HTTP 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：空结果/拒答；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-07", "weekday": "周五", "week": "P2-W10", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["3 个错误场景测试", "基础线：DB 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：3 个错误场景测试；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-08", "weekday": "周六", "week": "P2-W10", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["修 bug", "基础线：事务 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：修 bug；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-09", "weekday": "周日", "week": "P2-W10", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["复盘", "稳定性", "基础线：错题 2 题", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：复盘：稳定性；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-10", "weekday": "周一", "week": "P2-W11", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["Dockerfile", "python:3.11-slim", "基础线：Docker 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：Dockerfile：python:3.11-slim；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-11", "weekday": "周二", "week": "P2-W11", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["docker compose", "api + volume", "基础线：Nginx 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：docker compose：api + volume；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-12", "weekday": "周三", "week": "P2-W11", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["env/上传目录", "基础线：HTTPS 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：env/上传目录；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-13", "weekday": "周四", "week": "P2-W11", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["本机 8000 跑通", "基础线：部署 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：本机 8000 跑通；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-14", "weekday": "周五", "week": "P2-W11", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["重建/清空 volume 测试", "基础线：日志 1 题 + 项目八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：重建/清空 volume 测试；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-15", "weekday": "周六", "week": "P2-W11", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["README 部署段", "基础线：错题 2 题", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：README 部署段；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-16", "weekday": "周日", "week": "P2-W11", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["复盘", "Docker", "基础线：复盘 30 分钟", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：复盘：Docker；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-17", "weekday": "周一", "week": "P2-W12", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["云服务器", "git clone", "基础线：项目八股 1 题 + 系统设计", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：云服务器：git clone；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-18", "weekday": "周二", "week": "P2-W12", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["compose up + 上传目录", "基础线：系统设计 1 题 + 评测", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：compose up + 上传目录；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-19", "weekday": "周三", "week": "P2-W12", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["安全组/防火墙", "基础线：评测 1 题 + 失败案例", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：安全组/防火墙；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-20", "weekday": "周四", "week": "P2-W12", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["手机 4G 访问", "基础线：失败案例 1 题 + 简历", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：手机 4G 访问；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-21", "weekday": "周五", "week": "P2-W12", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["排障记录", "基础线：简历 1 题 + 项目", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：排障记录；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-22", "weekday": "周六", "week": "P2-W12", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["补 3 条坑", "基础线：错题 2 题", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：补 3 条坑；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-23", "weekday": "周日", "week": "P2-W12", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["复盘", "上云", "基础线：复盘 30 分钟", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：复盘：上云；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-24", "weekday": "周一", "week": "P2-W13", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["Nginx 反代 /api + 静态页", "基础线：项目八股 1 题 + 15 分钟讲稿", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：Nginx 反代 /api + 静态页；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-25", "weekday": "周二", "week": "P2-W13", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["域名/80", "基础线：项目八股 1 题 + 追问", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：域名/80；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-26", "weekday": "周三", "week": "P2-W13", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["HTTPS/certbot", "基础线：八股 1 题 + 算法", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：HTTPS/certbot；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-27", "weekday": "周四", "week": "P2-W13", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["/health 200", "基础线：算法 1 题 + 投递", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：/health 200；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-28", "weekday": "周五", "week": "P2-W13", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["手机 HTTPS", "基础线：投递 1 家 + 复盘", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：手机 HTTPS；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-29", "weekday": "周六", "week": "P2-W13", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["README 访问地址", "基础线：错题 2 题", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：README 访问地址；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-30", "weekday": "周日", "week": "P2-W13", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["复盘", "Nginx", "基础线：复盘 30 分钟", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：复盘：Nginx；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-05-31", "weekday": "周一", "week": "P2-W14", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["README", "启动/接口/截图", "基础线：项目八股 1 题 + 15 分钟讲稿", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：README：启动/接口/截图；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-01", "weekday": "周二", "week": "P2-W14", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["架构图 + 数据流", "基础线：面试追问 1 题 + 项目", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：架构图 + 数据流；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-02", "weekday": "周三", "week": "P2-W14", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["接口文档/curl", "基础线：八股 1 题 + 算法", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：接口文档/curl；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-03", "weekday": "周四", "week": "P2-W14", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["3 分钟讲稿 v1", "基础线：算法 1 题 + 投递", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：3 分钟讲稿 v1；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-04", "weekday": "周五", "week": "P2-W14", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["录 demo", "基础线：投递 1 家 + 复盘", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：录 demo；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-05", "weekday": "周六", "week": "P2-W14", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["找同学试用 2 人", "基础线：错题 2 题", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：找同学试用 2 人；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-06", "weekday": "周日", "week": "P2-W14", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["复盘", "表达", "基础线：复盘 30 分钟", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：复盘：表达；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-07", "weekday": "周一", "week": "P2-W15", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["简历 v1", "项目 bullet", "基础线：简历 1 题 + 项目", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：简历 v1：项目 bullet；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-08", "weekday": "周二", "week": "P2-W15", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["10 家 2027 日实清单", "基础线：项目 15 分钟 + 追问", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：10 家 2027 日实清单；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-09", "weekday": "周三", "week": "P2-W15", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["投 5 家 + 记录", "基础线：八股 1 题 + 算法", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：投 5 家 + 记录；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-10", "weekday": "周四", "week": "P2-W15", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["投 5 家 + 记录", "基础线：算法 1 题 + 投递", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：投 5 家 + 记录；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-11", "weekday": "周五", "week": "P2-W15", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["面试题 10 个", "基础线：投递 1 家 + 复盘", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：面试题 10 个；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-12", "weekday": "周六", "week": "P2-W15", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["复盘投递", "基础线：错题 2 题", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：复盘投递；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-13", "weekday": "周日", "week": "P2-W15", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["复盘", "求职", "基础线：复盘 30 分钟", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "做到：复盘：求职；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-14", "weekday": "周一", "week": "P2-W16", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["补 pytest 5 条", "基础线：期末错题 1 题 + 八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "学期收尾/期末复盘；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-15", "weekday": "周二", "week": "P2-W16", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["修 3 个 bug", "基础线：期末错题 1 题 + 八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "学期收尾/期末复盘；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-16", "weekday": "周三", "week": "P2-W16", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["项目截图/README 收尾", "基础线：项目收尾 1 题 + 八股", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "学期收尾/期末复盘；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-17", "weekday": "周四", "week": "P2-W16", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["期末复习", "基础线：算法 1 题 + 投递", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "学期收尾/期末复盘；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-18", "weekday": "周五", "week": "P2-W16", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["期末复习", "基础线：投递 1 家 + 复盘", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "学期收尾/期末复盘；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-19", "weekday": "周六", "week": "P2-W16", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["期末复习", "基础线：错题 2 题", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "学期收尾/期末复盘；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}, {"date": "2027-06-20", "weekday": "周日", "week": "P2-W16", "phase": "P2 RAG｜2027.3.1-6.20｜DocMind RAG：解析/切块/Embedding/检索/引用/20 QA/评测", "tasks": ["复盘", "学期收尾/期末", "基础线：复盘 30 分钟", "英语：技术文档/单词 15 分钟", "收尾：commit + 截图/记录 1 行"], "criteria": "学期收尾/期末复盘；截图/记录 1 条", "techMin": 140, "engMin": 15, "knowledge": "Python / FastAPI / LLM API"}];
+
+/* ================= storage ================= */
+const LS = { rec:'checkin.records.v1', set:'checkin.settings.v1', theme:'checkin.theme.v1', last:'checkin.lastdate.v1', backup:'checkin.records.backup' };
+const load = (k, fb) => { try{ return JSON.parse(localStorage.getItem(k)) ?? fb; }catch(e){ return fb; } };
+const save = (k, v) => {
+  try{ localStorage.setItem(k, JSON.stringify(v)); return true; }
+  catch(e){ console.warn('localStorage 写入失败', e); return false; }
+};
+let records = load(LS.rec, {});
+if(!records || typeof records !== 'object' || Array.isArray(records)) records = {};
+const savedSettings = load(LS.set, {});
+let settings = Object.assign({ token:'', repo:'', lastSyncAt:0, autoSync:false }, savedSettings && typeof savedSettings === 'object' && !Array.isArray(savedSettings) ? savedSettings : {});
+
+/* ================= data helpers ================= */
+const byDate = new Map(DAYS.map((d,i)=>[d.date, i]));
+const pad = n => String(n).padStart(2,'0');
+const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+let todayStr = fmt(new Date());
+const FIRST = DAYS[0].date, LAST = DAYS[DAYS.length-1].date;
+const clampDate = s => s < FIRST ? FIRST : (s > LAST ? LAST : s);
+
+// stable task ids: same text keeps its checked state even if tasks are reordered
+function hashText(s){
+  let h = 2166136261;
+  for(let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return (h >>> 0).toString(36);
+}
+function taskIdsFor(d){
+  const seen = {};
+  return d.tasks.map(t=>{
+    const h = hashText(t);
+    seen[h] = (seen[h] || 0) + 1;
+    return h + ':' + seen[h];
+  });
+}
+function recTime(r){ return Number(r && r.updatedAt) || 0; }
+function recContent(r){
+  if(!r) return '';
+  const { updatedAt, tomorrowSeen, taskIds, ...rest } = r;
+  return JSON.stringify(rest);
+}
+
+// reconcile record task arrays with DAYS, migrating old index-based records by task id
+function normalizeAllRecords(){
+  for(const d of DAYS){
+    const r = records[d.date];
+    if(!r) continue;
+    const ids = taskIdsFor(d);
+    const oldIds = Array.isArray(r.taskIds) ? r.taskIds : [];
+    const oldTasks = Array.isArray(r.tasks) ? r.tasks : [];
+    if(oldIds.length){
+      r.tasks = ids.map(id=>{
+        const j = oldIds.indexOf(id);
+        return j >= 0 ? !!oldTasks[j] : false;
+      });
+    }else{
+      r.tasks = ids.map((_,i)=>!!oldTasks[i]);
+    }
+    r.taskIds = ids;
+  }
+}
+normalizeAllRecords();
+
+function recOf(date, create){
+  let r = records[date];
+  const d = DAYS[byDate.get(date)];
+  if(!r && create){
+    r = { tasks: d.tasks.map(()=>false), taskIds: taskIdsFor(d), techMin:'', engMin:'', blocker:'', tomorrow:'', evidence:'', updatedAt:0 };
+    records[date] = r;
+  }
+  if(r && !Array.isArray(r.tasks)) r.tasks = d.tasks.map(()=>false);
+  if(r && !Array.isArray(r.taskIds)) r.taskIds = taskIdsFor(d);
+  return r;
+}
+function doneCount(date){
+  const r = records[date];
+  if(!r) return 0;
+  return (r.tasks||[]).filter(Boolean).length;
+}
+function statusOf(date){
+  const d = DAYS[byDate.get(date)];
+  if(!d) return 'none';
+  const c = doneCount(date);
+  if(c === 0 && !hasActivity(date)) return 'none';
+  return c === d.tasks.length ? 'done' : 'partial';
+}
+function streak(){
+  let s = 0;
+  let cur = todayStr;
+  if(byDate.has(cur) && statusOf(cur) !== 'done'){
+    const d = new Date(cur + 'T00:00:00'); d.setDate(d.getDate()-1);
+    cur = fmt(d); // today not finished yet: count from yesterday
+  }
+  while(byDate.has(cur) && statusOf(cur) === 'done'){ s++; const d = new Date(cur+'T00:00:00'); d.setDate(d.getDate()-1); cur = fmt(d); }
+  return s;
+}
+
+/* ================= view switching ================= */
+let curView = 'today';
+document.querySelectorAll('nav button').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    curView = b.dataset.view;
+    document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active', x===b));
+    document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id==='view-'+curView));
+    if(curView==='overview') renderOverview();
+    if(curView==='stats') renderStats();
+    if(curView==='settings') fillSettings();
+  });
+});
+
+/* ================= theme ================= */
+const themeBtn = document.getElementById('themeBtn');
+function applyTheme(t){
+  document.documentElement.dataset.theme = t;
+  themeBtn.textContent = t==='dark' ? '☀️' : '🌙';
+  save(LS.theme, t);
+}
+applyTheme(load(LS.theme, window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'));
+themeBtn.addEventListener('click', ()=> applyTheme(document.documentElement.dataset.theme==='dark' ? 'light':'dark'));
+
+/* ================= today view ================= */
+const lastSaved = load(LS.last, todayStr);
+let cur = clampDate(typeof lastSaved === 'string' && byDate.has(lastSaved) ? lastSaved : todayStr);
+const $ = id => document.getElementById(id);
+
+function renderToday(){
+  const i = byDate.get(cur), d = DAYS[i];
+  const dt = new Date(cur+'T00:00:00');
+  $('dateLabel').innerHTML = `${dt.getMonth()+1}月${dt.getDate()}日<span class="wk">${d.weekday} · ${d.week}${cur===todayStr?' · 今天':''}</span>`;
+  const pm = d.phase.match(/^(P[^｜]+)｜(.+?)｜(.+)$/);
+  $('phaseBanner').innerHTML = pm
+    ? `<b>${pm[1]}</b>${pm[2]}｜${pm[3]}`
+    : d.phase;
+  $('criteriaText').textContent = d.criteria || '（无）';
+  $('planTech').textContent = d.techMin ? d.techMin + ' 分钟' : '—';
+  $('planEng').textContent = d.engMin ? d.engMin + ' 分钟' : '—';
+
+  const r = recOf(cur, false) || { tasks: d.tasks.map(()=>false), techMin:'', engMin:'', blocker:'', tomorrow:'', evidence:'' };
+  const ul = $('taskList'); ul.innerHTML = '';
+  d.tasks.forEach((t, idx)=>{
+    const li = document.createElement('li');
+    const checked = !!r.tasks[idx];
+    if(checked) li.classList.add('done');
+    li.innerHTML = `<input type="checkbox" class="tcheck" ${checked?'checked':''}/>
+      <span class="tnum">${idx+1}</span><span class="ttext"></span>`;
+    li.querySelector('.ttext').textContent = t;
+    li.querySelector('.tcheck').addEventListener('change', e=>{
+      recOf(cur, true).tasks[idx] = e.target.checked;
+      persist();
+      li.classList.toggle('done', e.target.checked);
+      updateProgress();
+    });
+    ul.appendChild(li);
+  });
+  $('recTech').value = r.techMin ?? '';
+  $('recEng').value = r.engMin ?? '';
+  $('recBlocker').value = r.blocker ?? '';
+  $('recTomorrow').value = r.tomorrow ?? '';
+  $('recEvidence').value = r.evidence ?? '';
+  renderCarryover();
+  updateProgress();
+}
+
+function prevPlanDate(date){
+  const i = byDate.get(date);
+  return i > 0 ? DAYS[i-1].date : null;
+}
+function renderCarryover(){
+  const prev = prevPlanDate(cur);
+  const r = prev ? records[prev] : null;
+  const el = $('carryover');
+  if(r && r.tomorrow && r.tomorrowSeen !== cur){
+    $('carryoverText').textContent = r.tomorrow;
+    el.dataset.from = prev;
+    el.hidden = false;
+  }else{
+    el.hidden = true;
+    el.dataset.from = '';
+  }
+}
+$('carryoverDone').addEventListener('click', ()=>{
+  const from = $('carryover').dataset.from;
+  if(!from) return;
+  const r = records[from];
+  if(r){ r.tomorrowSeen = cur; save(LS.rec, records); }
+  $('carryover').hidden = true;
+});
+
+function updateProgress(){
+  const d = DAYS[byDate.get(cur)];
+  const c = doneCount(cur), n = d.tasks.length;
+  $('taskProgress').innerHTML = `<b>${c}</b> / ${n} 项`;
+  const st = statusOf(cur);
+  const chip = $('statusChip');
+  chip.className = 'status-chip ' + (st==='done'?'st-done':st==='partial'?'st-partial':'st-none');
+  chip.textContent = st==='done' ? '已完成 🎉' : st==='partial' ? `进行中 ${c}/${n}` : '未开始';
+}
+
+let hintTimer;
+function flashHint(){
+  const h = $('saveHint');
+  h.textContent = '✓ 已保存';
+  h.classList.add('flash');
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(()=>{ h.textContent = '更改自动保存到本地'; h.classList.remove('flash'); }, 1600);
+}
+function persist(){
+  const r = records[cur];
+  if(r) r.updatedAt = Date.now();
+  save(LS.rec, records);
+  save(LS.last, cur);
+  flashHint();
+  queueAutoSync();
+}
+
+/* ===== 自动同步：改动后延迟静默推送 ===== */
+let autoTimer = null, autoBusy = false, autoPending = false;
+function autoState(msg, cls){
+  const el = $('autoState');
+  if(!el) return;
+  el.textContent = msg; el.className = 'auto-state' + (cls ? ' ' + cls : '');
+}
+function autoReady(){
+  return !!(settings.autoSync && settings.token && settings.repo);
+}
+function queueAutoSync(){
+  if(!autoReady()) return;
+  clearTimeout(autoTimer);
+  autoTimer = setTimeout(runAutoSync, 2500);
+}
+async function runAutoSync(){
+  if(!autoReady()) return;
+  if(autoBusy){ autoPending = true; return; }
+  autoBusy = true;
+  autoState('同步中…');
+  try{
+    const remote = await fetchRemote();
+    const base = Number(settings.lastSyncAt || 0);
+    const remoteRecs = (remote.data && remote.data.records) || {};
+    const remoteCount = Object.keys(remoteRecs).length;
+    // 本地没有任何记录、云端有数据 → 新设备首次使用，自动载入云端数据
+    if(!Object.keys(records).length && remoteCount && !settings.forceReplace){
+      records = mergeRemote(remoteRecs).merged;
+      normalizeAllRecords();
+      save(LS.rec, records);
+      settings.lastSyncAt = Date.now();
+      save(LS.set, settings);
+      renderAll();
+      autoState('✓ 已从云端载入 ' + remoteCount + ' 天记录', 'ok');
+      toast('已从云端载入 ' + remoteCount + ' 天记录');
+      return;
+    }
+    // 远端有其他设备的新改动时，不自动覆盖，交给手动同步处理
+    const remoteNewer = Object.keys(remoteRecs).filter(d=>
+      byDate.has(d) && !records[d] && recContent(remoteRecs[d]) !== recContent(records[d])
+    ).length;
+    const remoteChanged = Object.keys(remoteRecs).some(d=>
+      byDate.has(d) && records[d] && recContent(remoteRecs[d]) !== recContent(records[d]) && recTime(remoteRecs[d]) > base
+    );
+    if(remoteNewer || remoteChanged){
+      autoState('远端有新数据，请手动同步', 'err');
+      return;
+    }
+    const payload = { version:2, exportedAt:new Date().toISOString(), records };
+    const put = await fetch(ghUrl(), {
+      method:'PUT', headers:{ ...ghHeaders(), 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        message: `打卡数据自动同步 ${new Date().toLocaleString('zh-CN')}`,
+        content: b64encode(JSON.stringify(payload, null, 2)),
+        ...(remote.sha ? { sha: remote.sha } : {})
+      })
+    });
+    if(put.status === 409 || put.status === 422) throw new Error('远端刚被修改，请手动同步');
+    if(!put.ok) throw new Error('HTTP ' + put.status);
+    settings.lastSyncAt = Date.now();
+    save(LS.set, settings);
+    autoState('✓ 已同步 ' + new Date().toLocaleTimeString('zh-CN', { hour:'2-digit', minute:'2-digit' }), 'ok');
+  }catch(e){
+    autoState('同步失败：' + (e.message || '网络异常'), 'err');
+  }finally{
+    autoBusy = false;
+    if(autoPending){ autoPending = false; queueAutoSync(); }
+  }
+}
+function goDate(date){
+  cur = clampDate(date);
+  save(LS.last, cur);
+  renderToday();
+}
+
+$('prevDay').addEventListener('click', ()=>{ const i=byDate.get(cur); if(i>0) goDate(DAYS[i-1].date); });
+$('nextDay').addEventListener('click', ()=>{ const i=byDate.get(cur); if(i<DAYS.length-1) goDate(DAYS[i+1].date); });
+$('btnToday').addEventListener('click', ()=> goDate(todayStr));
+$('btnAll').addEventListener('click', ()=>{
+  const r = recOf(cur, true);
+  r.tasks = r.tasks.map(()=>true);
+  persist(); renderToday();
+  toast('今日清单全部完成 🎉');
+});
+$('btnClearDay').addEventListener('click', ()=>{
+  if(!records[cur]){ toast('当天还没有记录'); return; }
+  if(!confirm('清空这一天的勾选和记录？会先自动备份当前数据。')) return;
+  if(!backupLocal('清空当天 '+cur)) return;
+  delete records[cur];
+  settings.forceReplace = true;
+  save(LS.rec, records);
+  save(LS.set, settings);
+  save(LS.last, cur);
+  renderToday();
+  toast('已清空当天，可在设置里恢复备份');
+});
+[['recTech','techMin'],['recEng','engMin'],['recBlocker','blocker'],['recTomorrow','tomorrow'],['recEvidence','evidence']].forEach(([id,key])=>{
+  $(id).addEventListener('input', e=>{
+    const r = recOf(cur, true);
+    r[key] = e.target.value;
+    if(key === 'tomorrow') r.tomorrowSeen = '';
+    persist();
+  });
+});
+
+/* ================= overview: heatmap ================= */
+function renderOverview(){
+  const chips = $('ovChips');
+  let done=0, partial=0;
+  const past = DAYS.filter(d=>d.date<=todayStr);
+  DAYS.forEach(d=>{ const s=statusOf(d.date); if(s==='done')done++; else if(s==='partial')partial++; });
+  const left = DAYS.length - done - partial;
+  chips.innerHTML = `
+    <div class="chip hi"><b>${done}<small style="font-size:13px;color:var(--muted)"> / ${DAYS.length}</small></b>已完成天数</div>
+    <div class="chip"><b>${streak()}</b>连续打卡 🔥</div>
+    <div class="chip"><b>${partial}</b>进行中</div>
+    <div class="chip"><b>${left}</b>剩余天数</div>`;
+
+  // group into week columns (Monday-based)
+  const cols = new Map();
+  DAYS.forEach(d=>{
+    const dt = new Date(d.date+'T00:00:00');
+    const mon = new Date(dt); mon.setDate(dt.getDate() - ((dt.getDay()+6)%7));
+    const key = fmt(mon);
+    if(!cols.has(key)) cols.set(key, { mon:key, cells:{} });
+    cols.get(key).cells[(dt.getDay()+6)%7] = d;
+  });
+  const heat = $('heatmap'); heat.innerHTML = '';
+  let prevMonth = null;
+  [...cols.keys()].sort().forEach(key=>{
+    const col = cols.get(key);
+    const cEl = document.createElement('div'); cEl.className = 'hm-col';
+    const monDate = new Date(key+'T00:00:00');
+    const mEl = document.createElement('div'); mEl.className='hm-month';
+    mEl.textContent = monDate.getMonth() !== prevMonth ? (monDate.getMonth()+1)+'月' : '';
+    prevMonth = monDate.getMonth();
+    cEl.appendChild(mEl);
+    for(let wd=0; wd<7; wd++){
+      const b = document.createElement('button');
+      b.className = 'hm-cell';
+      const d = col.cells[wd];
+      if(!d){
+        const sd = new Date(key+'T00:00:00'); sd.setDate(sd.getDate()+wd);
+        const s = fmt(sd);
+        if(s < FIRST || s > LAST){ b.className += ' hm-empty'; b.disabled = true; }
+        else { b.className += ' hm-future'; b.disabled = true; }
+      }else{
+        const c = doneCount(d.date), n = d.tasks.length;
+        const s = statusOf(d.date);
+        if(s==='done') b.classList.add('hm-full');
+        else if(c/n >= 0.5) b.classList.add('hm-q2');
+        else if(c>0) b.classList.add('hm-q1');
+        if(d.date===todayStr) b.classList.add('hm-today');
+        b.title = `${d.date} ${d.weekday} · ${s==='done'?'已完成':s==='partial'?`进行中 ${c}/${n}`:'未开始'}`;
+        b.addEventListener('click', ()=>{ goDate(d.date); switchView('today'); });
+      }
+      cEl.appendChild(b);
+    }
+    heat.appendChild(cEl);
+  });
+}
+
+/* ================= stats ================= */
+function actualMinutes(r, key){
+  if(!r) return null;
+  const v = r[key];
+  if(v === '' || v === null || typeof v === 'undefined') return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+function hasActivity(date){
+  const r = records[date];
+  if(!r) return false;
+  if((r.tasks||[]).some(Boolean)) return true;
+  return actualMinutes(r,'techMin') !== null || actualMinutes(r,'engMin') !== null;
+}
+function calcStats(){
+  let done=0, tech=0, eng=0;
+  DAYS.forEach(d=>{
+    const r = records[d.date];
+    const isDone = statusOf(d.date) === 'done';
+    if(isDone) done++;
+    if(!hasActivity(d.date)) return;
+    const t = actualMinutes(r, 'techMin');
+    const e = actualMinutes(r, 'engMin');
+    // 实际分钟优先；没填时，只有全勾天才回退到计划值
+    tech += t !== null ? t : (isDone ? (Number(d.techMin) || 0) : 0);
+    eng += e !== null ? e : (isDone ? (Number(d.engMin) || 0) : 0);
+  });
+  return { done, tech, eng };
+}
+function renderStats(){
+  const { done, tech, eng } = calcStats();
+  const pct = Math.round(done/DAYS.length*100);
+  $('kpiGrid').innerHTML = `
+    <div class="kpi"><div class="v">${done}<small>/${DAYS.length}</small></div><div class="l">已完成天数 · ${pct}%</div></div>
+    <div class="kpi"><div class="v">${streak()}<small> 天</small></div><div class="l">连续打卡</div></div>
+    <div class="kpi"><div class="v">${(tech/60).toFixed(1)}<small> h</small></div><div class="l">累计技术学习（实际）</div></div>
+    <div class="kpi"><div class="v">${(eng/60).toFixed(1)}<small> h</small></div><div class="l">累计英语学习（实际）</div></div>`;
+
+  // weekly bars: completed tasks / total tasks
+  const weeks = new Map();
+  DAYS.forEach(d=>{
+    if(!weeks.has(d.week)) weeks.set(d.week, {t:0, c:0});
+    const w = weeks.get(d.week); w.t += d.tasks.length;
+    w.c += doneCount(d.date);
+  });
+  const wb = $('weekBars'); wb.innerHTML = '';
+  [...weeks.entries()].forEach(([wk, w])=>{
+    const row = document.createElement('div'); row.className='wk-row';
+    row.innerHTML = `<span class="wl">${wk}</span><div class="bar"><i style="width:0%"></i></div><span class="wv">${w.c}/${w.t}</span>`;
+    wb.appendChild(row);
+    requestAnimationFrame(()=>{ row.querySelector('i').style.width = (w.c/w.t*100)+'%'; });
+  });
+}
+
+/* ================= settings & sync ================= */
+function fillSettings(){
+  $('setToken').value = settings.token || '';
+  $('setRepo').value = normalizeRepo(settings.repo || '');
+  const cb = $('setAutoSync');
+  if(cb){
+    cb.checked = !!settings.autoSync;
+    if(!settings.autoSync) autoState('未开启');
+    else if(!settings.token || !settings.repo) autoState('待完善 Token / 仓库', 'err');
+    else if(settings.lastSyncAt) autoState('上次同步 ' + new Date(settings.lastSyncAt).toLocaleString('zh-CN'), 'ok');
+    else autoState('已开启，等待首次同步');
+  }
+}
+function normalizeRepo(input){
+  return String(input || '').trim()
+    .replace(/^https?:\/\/github\.com\//i, '')
+    .replace(/^github\.com\//i, '')
+    .replace(/^git@github\.com:/i, '')
+    .replace(/\.git$/i, '')
+    .replace(/^\/+|\/+$/g, '');
+}
+function validRepo(repo){
+  return /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repo);
+}
+$('btnSaveSet').addEventListener('click', ()=>{
+  const repo = normalizeRepo($('setRepo').value);
+  if(repo && !validRepo(repo)){
+    syncStatus('仓库格式应为“用户名/仓库名”，例如 myname/checkin-data', 'err');
+    return;
+  }
+  settings.token = $('setToken').value.trim();
+  settings.repo = repo;
+  save(LS.set, settings);
+  fillSettings();
+  syncStatus('设置已保存到本地', 'ok');
+  toast('设置已保存到本地');
+  if(autoReady()) runAutoSync();
+});
+$('btnClearToken').addEventListener('click', ()=>{
+  settings.token = '';
+  save(LS.set, settings);
+  fillSettings();
+  syncStatus('Token 已清除', 'ok');
+  toast('Token 已清除');
+});
+$('setAutoSync').addEventListener('change', e=>{
+  settings.autoSync = e.target.checked;
+  save(LS.set, settings);
+  if(!settings.autoSync){ clearTimeout(autoTimer); autoState('未开启'); return; }
+  if(!settings.token || !settings.repo){ autoState('待完善 Token / 仓库', 'err'); return; }
+  autoState('已开启，正在首次同步…');
+  runAutoSync();
+});
+
+/* 测试连接：验证 Token 有效 + 检查仓库是否存在 */
+$('btnTestConn').addEventListener('click', async ()=>{
+  const token = $('setToken').value.trim();
+  if(!token){ syncStatus('请先填入 Token', 'err'); return; }
+  settings.token = token;
+  save(LS.set, settings);
+  syncStatus('正在验证 Token…');
+  try{
+    const me = await fetch('https://api.github.com/user', { headers: ghHeaders() });
+    if(me.status === 401) throw new Error('Token 无效或已过期，请重新生成');
+    if(!me.ok) throw new Error('验证失败: HTTP ' + me.status);
+    const user = await me.json();
+
+    let repoMsg = '仓库未填写';
+    const repo = normalizeRepo($('setRepo').value);
+    if(repo && validRepo(repo)){
+      const r = await fetch(`https://api.github.com/repos/${repo}`, { headers: ghHeaders() });
+      if(r.ok){
+        const info = await r.json();
+        repoMsg = `仓库 ${repo} 可访问（${info.private ? '私有' : '公开'}）`;
+        settings.repo = repo; save(LS.set, settings);
+      }else if(r.status === 404){
+        repoMsg = `仓库 ${repo} 不存在或无权限，可点「自动建仓库」`;
+      }else{
+        repoMsg = `仓库检查失败: HTTP ${r.status}`;
+      }
+    }
+    syncStatus(`✓ Token 有效，账号：${user.login}｜${repoMsg}`, 'ok');
+    toast('连接正常：' + user.login);
+    if(!repo) $('setRepo').placeholder = user.login + '/checkin-data';
+  }catch(e){
+    syncStatus('✗ ' + (e.message || '连接失败，请检查网络'), 'err');
+  }
+});
+
+/* 自动建仓库：不存在则创建私有仓库 */
+$('btnCreateRepo').addEventListener('click', async ()=>{
+  const token = $('setToken').value.trim();
+  if(!token){ syncStatus('请先填入 Token', 'err'); return; }
+  settings.token = token; save(LS.set, settings);
+  syncStatus('正在准备仓库…');
+  try{
+    const me = await fetch('https://api.github.com/user', { headers: ghHeaders() });
+    if(me.status === 401) throw new Error('Token 无效或已过期');
+    if(!me.ok) throw new Error('获取账号失败: HTTP ' + me.status);
+    const user = await me.json();
+
+    let repo = normalizeRepo($('setRepo').value);
+    if(!repo) repo = `${user.login}/checkin-data`;
+    if(!validRepo(repo)) throw new Error('仓库格式应为 用户名/仓库名');
+    const [owner, name] = repo.split('/');
+    if(owner.toLowerCase() !== user.login.toLowerCase()){
+      throw new Error(`仓库所有者需为你自己的账号（${user.login}）`);
+    }
+
+    const check = await fetch(`https://api.github.com/repos/${repo}`, { headers: ghHeaders() });
+    if(check.ok){
+      settings.repo = repo; save(LS.set, settings);
+      syncStatus(`✓ 仓库 ${repo} 已存在，可直接「同步到 GitHub」`, 'ok');
+      fillSettings();
+      return;
+    }
+    if(check.status !== 404) throw new Error('检查仓库失败: HTTP ' + check.status);
+
+    const create = await fetch('https://api.github.com/user/repos', {
+      method:'POST',
+      headers:{ ...ghHeaders(), 'Content-Type':'application/json' },
+      body: JSON.stringify({ name, private:true, auto_init:true, description:'每日学习打卡数据备份' })
+    });
+    if(!create.ok){
+      const err = await create.json().catch(()=>({}));
+      throw new Error(err.message || ('创建失败: HTTP ' + create.status));
+    }
+    settings.repo = repo; save(LS.set, settings);
+    fillSettings();
+    syncStatus(`✓ 已创建私有仓库 ${repo}，现在可以点「同步到 GitHub」`, 'ok');
+    toast('仓库已创建');
+  }catch(e){
+    syncStatus('✗ ' + (e.message || '创建失败'), 'err');
+  }
+});
+
+const b64encode = s => {
+  const bytes = new TextEncoder().encode(s);
+  let bin = '';
+  bytes.forEach(b=>{ bin += String.fromCharCode(b); });
+  return btoa(bin);
+};
+const b64decode = s => {
+  const bin = atob(String(s).replace(/\s/g, ''));
+  const bytes = Uint8Array.from(bin, c=>c.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+};
+function ghHeaders(){
+  return { 'Authorization':'Bearer '+settings.token, 'Accept':'application/vnd.github+json' };
+}
+function ghUrl(){
+  const repo = normalizeRepo(settings.repo);
+  if(!validRepo(repo)) throw new Error('仓库格式应为 用户名/仓库名');
+  const [owner, name] = repo.split('/');
+  return `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}/contents/checkin-data.json`;
+}
+function syncStatus(msg, cls){
+  const el = $('syncStatus');
+  el.textContent = msg; el.className = cls||'';
+}
+function backupLocal(reason){
+  const ok = save(LS.backup, { at:new Date().toISOString(), reason, records });
+  if(!ok){
+    syncStatus('自动备份失败：localStorage 空间不足，本次操作已取消', 'err');
+    return false;
+  }
+  return true;
+}
+function restoreBackup(){
+  const b = load(LS.backup, null);
+  if(!b || !b.records){ toast('还没有自动备份'); return; }
+  if(!confirm(`恢复 ${b.at} 的备份？当前数据会被替换。`)) return;
+  records = b.records;
+  normalizeAllRecords();
+  save(LS.rec, records);
+  settings.forceReplace = true;
+  save(LS.set, settings);
+  renderAll();
+  toast('已恢复自动备份');
+}
+
+function mergeRemote(remote){
+  const base = Number(settings.lastSyncAt || 0);
+  const merged = { ...records };
+  const conflicts = [];
+  let added = 0, updated = 0, kept = 0;
+  Object.keys(remote || {}).forEach(date=>{
+    if(!byDate.has(date)) return;
+    const r = remote[date];
+    if(!r || typeof r !== 'object') return;
+    const local = merged[date];
+    if(!local){ merged[date] = r; added++; return; }
+    if(recContent(local) === recContent(r)) return;
+    const lt = recTime(local), rt = recTime(r);
+    const localChanged = lt > base;
+    const remoteChanged = rt > base;
+    if(localChanged && remoteChanged){ conflicts.push(date); return; }
+    if(!localChanged && !remoteChanged){ conflicts.push(date); return; }
+    if(remoteChanged){ merged[date] = r; updated++; return; }
+    kept++;
+  });
+  return { merged, conflicts, added, updated, kept };
+}
+function applyMerge(result, label){
+  if(result.conflicts.length){
+    const preview = result.conflicts.slice(0, 6).join('、') + (result.conflicts.length > 6 ? ' 等' : '');
+    if(!confirm(`${label}\n有 ${result.conflicts.length} 天两边都改过：${preview}\n这些天保留本地版本，其余日期合并。继续？`)) return false;
+  }
+  if(!backupLocal(label+'（合并前）')) return false;
+  records = result.merged;
+  normalizeAllRecords();
+  save(LS.rec, records);
+  return true;
+}
+async function fetchRemote(){
+  const res = await fetch(ghUrl(), { headers: ghHeaders() });
+  if(res.status === 404) return { sha:null, data:null };
+  if(!res.ok) throw new Error('读取仓库失败: HTTP '+res.status);
+  const j = await res.json();
+  let data = null;
+  try{ data = JSON.parse(b64decode(j.content)); }
+  catch(e){ throw new Error('checkin-data.json 解析失败'); }
+  return { sha:j.sha, data };
+}
+async function pushRemote(){
+  if(!settings.token || !settings.repo){ syncStatus('请先填写 Token 和仓库并保存','err'); return; }
+  syncStatus('正在同步…');
+  try{
+    const remote = await fetchRemote();
+    const force = !!settings.forceReplace;
+    if(force){
+      if(!confirm('本地有清空/重置/导入操作。本次推送会用本地数据覆盖远端，继续？')){ syncStatus('已取消',''); return; }
+    }else{
+      const merged = mergeRemote(remote.data && remote.data.records || {});
+      if(!applyMerge(merged, '同步到 GitHub：')){ syncStatus('已取消',''); return; }
+    }
+    const payload = { version:2, exportedAt:new Date().toISOString(), records };
+    const put = await fetch(ghUrl(), {
+      method:'PUT', headers:{ ...ghHeaders(), 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        message: `打卡数据同步 ${new Date().toLocaleString('zh-CN')}`,
+        content: b64encode(JSON.stringify(payload, null, 2)),
+        ...(remote.sha ? { sha: remote.sha } : {})
+      })
+    });
+    if(put.status === 409 || put.status === 422) throw new Error('远端刚被修改，请重新同步（本次不会覆盖）');
+    if(!put.ok) throw new Error('推送失败: HTTP '+put.status);
+    settings.forceReplace = false;
+    settings.lastSyncAt = Date.now();
+    save(LS.set, settings);
+    syncStatus('✓ 已同步到 GitHub（'+settings.repo+'）','ok');
+    if(settings.autoSync) autoState('✓ 已同步 ' + new Date().toLocaleTimeString('zh-CN', { hour:'2-digit', minute:'2-digit' }), 'ok');
+    toast('已同步到 GitHub');
+    renderAll();
+  }catch(e){ syncStatus('✗ '+(e.message||'同步失败，请检查网络与 Token'),'err'); }
+}
+async function pullRemote(){
+  if(!settings.token || !settings.repo){ syncStatus('请先填写 Token 和仓库并保存','err'); return; }
+  syncStatus('正在拉取…');
+  try{
+    const remote = await fetchRemote();
+    if(!remote.data || !remote.data.records){ syncStatus('仓库里还没有 checkin-data.json，请先「同步到 GitHub」','err'); return; }
+    const merged = mergeRemote(remote.data.records);
+    if(!applyMerge(merged, '从 GitHub 恢复：')){ syncStatus('已取消',''); return; }
+    settings.forceReplace = false;
+    settings.lastSyncAt = Date.now();
+    save(LS.set, settings);
+    renderAll();
+    syncStatus('✓ 已从 GitHub 合并（新增 '+merged.added+' 天，更新 '+merged.updated+' 天）','ok');
+    toast('已从 GitHub 合并');
+  }catch(e){ syncStatus('✗ '+(e.message||'恢复失败'),'err'); }
+}
+$('btnPush').addEventListener('click', pushRemote);
+$('btnPull').addEventListener('click', pullRemote);
+$('btnRestoreBackup').addEventListener('click', restoreBackup);
+$('btnResetAll').addEventListener('click', ()=>{
+  if(!confirm('确定重置全部 222 天的记录？')) return;
+  if(!confirm('再次确认：所有勾选、分钟、卡点、证据都会删除。会先自动备份。')) return;
+  if(!backupLocal('重置全部')) return;
+  records = {};
+  settings.forceReplace = true;
+  save(LS.rec, records);
+  save(LS.set, settings);
+  renderAll();
+  toast('已重置全部记录，可在设置里恢复备份');
+});
+
+$('btnExport').addEventListener('click', ()=>{
+  const payload = { version:2, exportedAt:new Date().toISOString(), records };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'checkin-backup.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('已导出 checkin-backup.json');
+});
+$('btnImportBtn').addEventListener('click', ()=> $('btnImport').click());
+$('btnImport').addEventListener('change', e=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  const rd = new FileReader();
+  rd.onload = ()=>{
+    try{
+      const data = JSON.parse(rd.result);
+      if(!data.records) throw new Error('格式不正确');
+      if(!confirm(`导入 ${Object.keys(data.records).length} 天记录并覆盖本地数据？会先自动备份。`)) return;
+      if(!backupLocal('导入 JSON 前')) return;
+      records = data.records;
+      normalizeAllRecords();
+      save(LS.rec, records);
+      settings.forceReplace = true;
+      save(LS.set, settings);
+      renderAll();
+      toast('导入成功');
+    }catch(err){ toast('导入失败：'+err.message); }
+  };
+  rd.readAsText(f);
+  e.target.value = '';
+});
+
+/* ================= misc ================= */
+function switchView(name){
+  document.querySelector(`nav button[data-view="${name}"]`).click();
+}
+function renderAll(){
+  if(curView === 'today') renderToday();
+  if(curView === 'overview') renderOverview();
+  if(curView === 'stats') renderStats();
+  if(curView === 'settings') fillSettings();
+}
+function refreshToday(){
+  const t = fmt(new Date());
+  if(t === todayStr) return;
+  todayStr = t;
+  renderAll();
+}
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) refreshToday(); });
+setInterval(refreshToday, 60*1000);
+let toastTimer;
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+renderToday();
+// 新设备（本地无记录）且已配置云同步：启动时自动从云端载入
+if(autoReady() && !Object.keys(records).length) runAutoSync();
+</script>
+</body>
+</html>
